@@ -127,9 +127,7 @@
         }
         .lock-active { border-color: var(--primary-color); border-width: 5px; box-shadow: 0 0 20px var(--primary-color); }
 
-        /* ====================
-           STAGE 4: CYBERPUNK SWITCH (REMASTERED)
-           ==================== */
+        /* STAGE 4: Switch */
         .switch-frame {
             position: relative; width: 280px; height: 420px; margin-top: 20px;
             background: #111;
@@ -182,16 +180,14 @@
             width: 80%; height: 60%;
             background: repeating-linear-gradient(90deg, rgba(255,0,0,0.1), rgba(255,0,0,0.1) 2px, transparent 2px, transparent 5px);
             border: 1px solid rgba(255,0,0,0.3); box-shadow: inset 0 0 10px rgba(255,0,0,0.2);
-            display: flex; align-items: center; justify-content: center; position: relative;
-            overflow: visible; /* 讓光爆可以超出核心 */
+            display: flex; align-items: center; justify-content: center; position: relative; overflow: visible;
         }
         .handle-text {
             color: rgba(255, 255, 255, 0.7); font-family: var(--tech-font); font-size: 0.8rem; letter-spacing: 2px;
             text-shadow: 0 0 5px rgba(255,0,0,0.5); pointer-events: none; z-index: 2;
         }
         .lever-handle.surging .handle-core {
-            background: #ff0000; box-shadow: 0 0 30px #ff0000;
-            animation: pulse-core 0.1s infinite;
+            background: #ff0000; box-shadow: 0 0 30px #ff0000; animation: pulse-core 0.1s infinite;
         }
 
         .safety-cover {
@@ -204,17 +200,11 @@
         .safety-cover.open { transform: rotateX(110deg); opacity: 0.2; pointer-events: none; }
         .lock-icon { font-size: 3rem; color: var(--secondary-color); text-shadow: 0 0 20px var(--secondary-color); }
 
-        /* --- 改進版光爆特效 (Smooth Bloom) --- */
         #light-bloom {
-            position: absolute; top: 50%; left: 50%; 
-            width: 20px; height: 20px; border-radius: 50%;
-            background: #fff;
-            transform: translate(-50%, -50%) scale(0);
-            pointer-events: none; z-index: 100;
-            /* 強烈的發光核心 */
+            position: absolute; top: 50%; left: 50%; width: 20px; height: 20px; border-radius: 50%;
+            background: #fff; transform: translate(-50%, -50%) scale(0); pointer-events: none; z-index: 100;
             box-shadow: 0 0 20px 10px #fff, 0 0 50px 20px #ffaaaa;
         }
-        /* 從核心擴散，使用 cubic-bezier 模擬爆炸初速度快、後持續 */
         .bloom-active { animation: lightExplosion 2s forwards cubic-bezier(0.1, 0, 0.2, 1); }
 
         #whiteout-layer {
@@ -223,21 +213,54 @@
         }
         .whiteout-fade-in { animation: smoothFadeIn 1s forwards; }
 
-        /* Dialog System */
+        /* ====================
+           DIALOG SYSTEM WITH PORTRAITS
+           ==================== */
         #dialog-layer {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9995;
             display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: env(safe-area-inset-bottom, 20px);
         }
         #dialog-box {
-            position: relative; width: 94%; margin: 0 auto 20px auto;
+            position: relative; width: 96%; margin: 0 auto 10px auto;
             background: linear-gradient(180deg, rgba(0, 20, 30, 0.95) 0%, rgba(0, 10, 15, 0.98) 100%);
             border: 2px solid var(--secondary-color); border-bottom: 4px solid var(--primary-color);
-            padding: 20px; pointer-events: auto; cursor: pointer;
+            padding: 15px; pointer-events: auto; cursor: pointer;
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            display: flex; /* 改為 Flex 布局 */
+            align-items: flex-start;
+            gap: 15px;
         }
-        .speaker { font-family: var(--tech-font); font-size: 0.9rem; padding: 4px 10px; margin-bottom: 10px; display: inline-block; background: var(--secondary-color); color: #000; font-weight: bold; }
-        .dialog-text { font-size: 1.2rem; color: #e0ffe0; min-height: 3.6rem; text-shadow: 0 0 2px rgba(0, 255, 0, 0.5); white-space: pre-wrap; line-height: 1.4; }
-        .next-arrow { position: absolute; bottom: 10px; right: 15px; font-size: 1.5rem; color: var(--secondary-color); animation: bounce 1s infinite; }
+        
+        /* 角色頭像樣式 */
+        .portrait-frame {
+            width: 70px; height: 70px; flex-shrink: 0;
+            border: 2px solid var(--secondary-color);
+            background: #000; overflow: hidden;
+            position: relative;
+        }
+        .portrait-frame img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(100%) sepia(100%) hue-rotate(180deg) contrast(1.2); /* Cyberpunk Blue Filter */
+        }
+        /* 頭像掃描線特效 */
+        .portrait-frame::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,255,255,0.1), rgba(0,255,255,0.1) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+        }
+
+        .dialog-content { flex: 1; display: flex; flex-direction: column; }
+        
+        .speaker { 
+            font-family: var(--tech-font); font-size: 0.9rem; padding: 2px 8px; margin-bottom: 5px; 
+            align-self: flex-start; /* 讓名字靠左 */
+            background: var(--secondary-color); color: #000; font-weight: bold;
+        }
+        .dialog-text { 
+            font-size: 1.1rem; color: #e0ffe0; min-height: 3rem; 
+            text-shadow: 0 0 2px rgba(0, 255, 0, 0.5); white-space: pre-wrap; line-height: 1.4; 
+        }
+        .next-arrow { position: absolute; bottom: 10px; right: 10px; font-size: 1.5rem; color: var(--secondary-color); animation: bounce 1s infinite; }
         
         #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
         #flash-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; opacity: 0; pointer-events: none; z-index: 9999; mix-blend-mode: hard-light; }
@@ -248,19 +271,9 @@
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
         @keyframes flashPlateau { 0% { opacity: 0; } 20% { opacity: 1; } 60% { opacity: 1; } 100% { opacity: 0; } }
         @keyframes pulse-core { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
-        
-        /* 光爆：從把手中心擴散，放大倍率增加以確保覆蓋全螢幕 */
-        @keyframes lightExplosion {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(250); opacity: 1; }
-        }
+        @keyframes lightExplosion { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(250); opacity: 1; } }
         @keyframes smoothFadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
-
-        /* 全域過曝效果：亮度極高，對比極低，製造致盲感 */
-        .content-overexposed {
-            transition: filter 1.5s cubic-bezier(0.1, 0, 0.9, 1);
-            filter: brightness(1000%) contrast(50%) grayscale(100%) !important;
-        }
+        .content-overexposed { transition: filter 1.5s cubic-bezier(0.1, 0, 0.9, 1); filter: brightness(1000%) contrast(50%) grayscale(100%) !important; }
 
     </style>
 </head>
@@ -326,10 +339,8 @@
                 <div class="panel-bg"></div>
                 <div class="hazard-sides hazard-left"></div>
                 <div class="hazard-sides hazard-right"></div>
-                
                 <div class="track-channel">
                     <div id="energy-stream" class="energy-stream"></div>
-
                     <div id="lever-handle" class="lever-handle">
                         <div class="handle-body">
                             <div class="handle-core">
@@ -339,7 +350,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div id="safety-cover" class="safety-cover">
                     <div style="text-align:center;">
                         <div class="lock-icon">🔒</div>
@@ -353,15 +363,22 @@
 
     <div id="dialog-layer" class="hidden">
         <div id="dialog-box">
-            <div id="speaker-name" class="speaker">SYSTEM</div>
-            <div id="dialog-text-container" class="dialog-text"></div>
+            <div id="char-portrait-container" class="portrait-frame hidden">
+                <img id="char-portrait-img" src="" alt="CHAR" />
+            </div>
+            
+            <div class="dialog-content">
+                <div id="speaker-name" class="speaker">SYSTEM</div>
+                <div id="dialog-text-container" class="dialog-text"></div>
+            </div>
+            
             <div id="next-arrow" class="next-arrow hidden">▼</div>
         </div>
     </div>
 
     <script>
         const CONFIG = {
-            liffId: "2008882930-UEAr0VU4", // ★ 請替換為您的 LIFF ID
+            liffId: "2008882930-UEAr0VU4", 
             devMode: true,
             targetGPS: { lat: 22.615556, lng: 120.265833 }, 
             gpsRadius: 1000000, 
@@ -371,6 +388,15 @@
         };
 
         const ASSETS = { images: { modern: null, old: null } };
+
+        // ★★★ 角色圖片設定 (請在此更換您的圖片 URL) ★★★
+        const CHAR_IMAGES = {
+            "阿水": "https://placehold.co/100x100/003366/00FFFF?text=WATER", // 替換成阿水的圖片連結
+            "粽哥": "https://placehold.co/100x100/333300/FFFF00?text=ZONG",  // 替換成粽哥的圖片連結
+            "系統AI": "https://placehold.co/100x100/000000/00FF00?text=AI", // 替換成 AI 的圖片連結
+            "系統警報": null // 警報時不顯示圖片
+        };
+
         const SCRIPTS = {
             intro: [
                 { name: "阿水 (語音雜訊)", text: "（滋...）不行！座標對不上... 時空亂流太強了！" },
@@ -414,6 +440,8 @@
             speaker: document.getElementById('speaker-name'),
             text: document.getElementById('dialog-text-container'),
             arrow: document.getElementById('next-arrow'),
+            portraitContainer: document.getElementById('char-portrait-container'),
+            portraitImg: document.getElementById('char-portrait-img'),
             stage1: document.getElementById('stage-1'),
             stage2: document.getElementById('stage-2'),
             stage3: document.getElementById('stage-3'),
@@ -423,7 +451,6 @@
             compassUI: document.getElementById('compass-ui'),
             radarLock: document.getElementById('radar-lock-ring'),
             radarBtn: document.getElementById('radar-btn'),
-            // Stage 4 Elements
             stage4: document.getElementById('stage-4'),
             safetyCover: document.getElementById('safety-cover'),
             leverHandle: document.getElementById('lever-handle'),
@@ -462,11 +489,31 @@
                 if (onScriptEnd) onScriptEnd(); return;
             }
             const line = scriptQueue.shift();
-            els.speaker.innerText = line.name; currentFullText = line.text;
             
+            // 更新文字與樣式
+            els.speaker.innerText = line.name; 
+            currentFullText = line.text;
+            
+            // 判斷角色並更新圖片
+            let imgKey = null;
+            if(line.name.includes("阿水")) imgKey = "阿水";
+            else if(line.name.includes("粽哥")) imgKey = "粽哥";
+            else if(line.name.includes("系統AI")) imgKey = "系統AI";
+            else if(line.name.includes("警報")) imgKey = "系統警報";
+
+            // 設定圖片
+            if(imgKey && CHAR_IMAGES[imgKey]) {
+                els.portraitImg.src = CHAR_IMAGES[imgKey];
+                els.portraitContainer.classList.remove('hidden');
+            } else {
+                els.portraitContainer.classList.add('hidden');
+            }
+
+            // 設定標籤顏色
             if(line.name.includes("阿水")) { els.speaker.style.background="var(--primary-color)"; els.speaker.style.color="#000"; }
             else if(line.name.includes("警報")) { els.speaker.style.background="var(--warn-color)"; els.speaker.style.color="#FFF"; }
             else { els.speaker.style.background="var(--secondary-color)"; els.speaker.style.color="#000"; }
+
             startTyping(currentFullText);
         }
 
@@ -540,7 +587,7 @@
             setTimeout(() => els.flash.classList.remove('flash-active'), 4000);
         }
 
-        // --- ROULETTE (Stage 2) CORRECTED ---
+        // --- ROULETTE (Stage 2) ---
         let rState = { angle: 0, speed: 3, running: false, mode: 'normal', lockedColor: null, targetColor: null, glitchCount: 0 };
         let animFrame;
 
@@ -575,10 +622,7 @@
                 return;
             }
 
-            // ★★★ 修正後的判定邏輯 ★★★
-            // 計算目前指針(12點鐘)下方的角度
             let effectiveAngle = (360 - rState.angle) % 360;
-            // 根據 conic-gradient 定義：紅(0-60)，白(60-120)
             let isRed = (effectiveAngle >= 0 && effectiveAngle < 60);
             let isWhite = (effectiveAngle >= 60 && effectiveAngle < 120);
             
@@ -586,15 +630,11 @@
             let errorMsg = "INVALID FREQUENCY";
 
             if (rState.mode === 'round1') {
-                // 第一輪：只要命中 紅 或 白 皆可
                 if (isRed) { hit = true; rState.lockedColor = 'red'; }
                 else if (isWhite) { hit = true; rState.lockedColor = 'white'; }
             } else if (rState.mode === 'round2') {
-                // 第二輪：必須命中「另一色」
                 if (rState.targetColor === 'red' && isRed) hit = true;
                 else if (rState.targetColor === 'white' && isWhite) hit = true;
-                
-                // 如果打中已經鎖定的顏色
                 if ((rState.lockedColor === 'red' && isRed) || (rState.lockedColor === 'white' && isWhite)) 
                     errorMsg = "同頻率干擾 (SAME FREQ)";
             }
@@ -604,9 +644,7 @@
                 rState.running = false; cancelAnimationFrame(animFrame);
                 
                 if (rState.mode === 'round1') {
-                    // 根據命中顏色決定下一輪目標
                     rState.targetColor = (rState.lockedColor === 'red') ? 'white' : 'red';
-                    
                     let colorName = rState.lockedColor === 'red' ? "RED" : "WHITE";
                     els.rouletteMsg.innerText = `LOCKED: ${colorName}`;
                     els.rouletteMsg.style.color = rState.lockedColor === 'red' ? "#F00" : "#FFF";
@@ -623,7 +661,6 @@
                     setTimeout(finishStage2, 1000);
                 }
             } else {
-                // 失敗回饋
                 if (navigator.vibrate) navigator.vibrate(200);
                 let originalText = els.rouletteMsg.innerText;
                 els.rouletteMsg.innerText = errorMsg;
@@ -659,7 +696,6 @@
         function startCompass() {
             els.radarBtn.innerText = "SEARCHING..."; els.radarBtn.disabled = true; els.radarBtn.style.opacity = 0.5;
             window.addEventListener('deviceorientation', handleOrientation);
-            // Fallback for desktop testing: auto lock after 3s
             if(!window.DeviceOrientationEvent) setTimeout(() => { els.compassUI.style.transform = `rotate(0deg)`; handleOrientation({webkitCompassHeading:0}); }, 2000);
         }
 
@@ -765,28 +801,13 @@
         }
 
         function triggerFinale() {
-            // 1. 強烈震動
             if(navigator.vibrate) navigator.vibrate([2000]); 
             els.dialogLayer.style.display = 'none';
             els.instruction.innerText = "DISCHARGING...";
-
-            // 2. 觸發光爆 (從把手內部炸開)
             els.lightBloom.classList.add('bloom-active');
-            
-            // 3. 全域過曝 (Global Overexposure) - 0.5秒後啟動，模擬致盲
-            setTimeout(() => {
-                els.content.classList.add('content-overexposed');
-            }, 500);
-
-            // 4. 純白圖層進場
-            setTimeout(() => {
-                els.whiteout.classList.add('whiteout-fade-in');
-            }, 1000);
-
-            // 5. 結束
-            setTimeout(() => {
-                sendCompletionMessage();
-            }, 3000);
+            setTimeout(() => { els.content.classList.add('content-overexposed'); }, 500);
+            setTimeout(() => { els.whiteout.classList.add('whiteout-fade-in'); }, 1000);
+            setTimeout(() => { sendCompletionMessage(); }, 3000);
         }
 
         async function sendCompletionMessage() {
