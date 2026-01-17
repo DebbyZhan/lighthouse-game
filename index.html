@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>乾卦・破曉之光 | LOGIC FIXED</title>
+    <title>乾卦・破曉之光 | RADAR FIX</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=VT323&display=swap" rel="stylesheet">
 
@@ -66,6 +66,11 @@
             color: #FFF; background: var(--warn-color); border-color: #FFF;
             box-shadow: 0 0 20px var(--warn-color);
             animation: shake 0.2s infinite;
+        }
+        /* 鎖定中的黃色狀態 */
+        .cyber-btn.locking-mode {
+            color: #000; background: #ffff00; border-color: #ffff00;
+            box-shadow: 0 0 20px #ffff00;
         }
 
         /* Layout */
@@ -247,7 +252,8 @@
             targetGPS: { lat: 22.615556, lng: 120.265833 }, 
             gpsRadius: 1000000, 
             scratchThreshold: 90,
-            glitchClicksReq: 30
+            glitchClicksReq: 15,
+            radarHoldTime: 2000 // 需要穩定 2 秒
         };
 
         const ASSETS = { images: { modern: null, old: null } };
@@ -449,7 +455,6 @@
         }
 
         function handleRouletteClick() {
-            // Glitch QTE
             if (rState.mode === 'glitch') {
                 rState.glitchCount++;
                 rState.speed = rState.speed > 0 ? rState.speed - 2 : rState.speed + 2; 
@@ -465,7 +470,7 @@
                 return;
             }
 
-            // Normal Hit Check
+            // Hit Check
             let effectiveAngle = (360 - rState.angle) % 360;
             let hitRed = (effectiveAngle >= 0 && effectiveAngle < 60);
             let hitWhite = (effectiveAngle >= 60 && effectiveAngle < 120);
@@ -476,13 +481,11 @@
                 if (hitRed) { hit = true; rState.lockedColor = 'red'; }
                 else if (hitWhite) { hit = true; rState.lockedColor = 'white'; }
             } else if (rState.mode === 'round2') {
-                // Must hit the TARGET color (the other one)
                 if (rState.targetColor === 'red' && hitRed) hit = true;
                 else if (rState.targetColor === 'white' && hitWhite) hit = true;
                 
-                // Specific error for hitting same color
-                if (rState.lockedColor === 'red' && hitRed) errorMsg = "同頻率干擾 (SAME FREQ ERROR)";
-                if (rState.lockedColor === 'white' && hitWhite) errorMsg = "同頻率干擾 (SAME FREQ ERROR)";
+                if ((rState.lockedColor === 'red' && hitRed) || (rState.lockedColor === 'white' && hitWhite)) 
+                    errorMsg = "同頻率干擾 (SAME FREQ)";
             }
 
             if (hit) {
@@ -493,7 +496,6 @@
                     let colorName = rState.lockedColor === 'red' ? "RED" : "WHITE";
                     els.rouletteMsg.innerText = `LOCKED: ${colorName}`;
                     els.rouletteMsg.style.color = rState.lockedColor === 'red' ? "#F00" : "#FFF";
-                    
                     setTimeout(() => playScript(SCRIPTS.glitchStart, () => {
                         rState.running = true; rState.mode = 'glitch'; 
                         rState.speed = 30; rState.glitchCount = 0;
@@ -501,7 +503,6 @@
                         els.rouletteBtn.classList.add('glitch-mode');
                         gameLoop();
                     }), 1000);
-
                 } else if (rState.mode === 'round2') {
                     els.rouletteMsg.innerText = "SYNC COMPLETE"; 
                     els.rouletteMsg.style.color = "#0F0"; els.rouletteMsg.style.borderColor = "#0F0";
@@ -523,18 +524,10 @@
 
         function startRound2() {
             rState.mode = 'round2';
-            // Set Target to the OTHER color
             rState.targetColor = (rState.lockedColor === 'red') ? 'white' : 'red';
-            
-            // Speed up and reverse
-            rState.speed = -8; 
-            rState.running = true;
-            
-            // Display: Waiting for 2nd Color (Don't spoil it, or spoil it, depends on preference. Here we guide them)
-            // But since text says "輸入解說牌上的另一種顏色", we can show AWAITING 2ND INPUT
+            rState.speed = -15; rState.running = true;
             els.rouletteMsg.innerText = `TARGET: 2nd COLOR`;
-            els.rouletteMsg.style.color = "#FFF";
-            els.rouletteMsg.style.borderColor = "#FFF";
+            els.rouletteMsg.style.color = "#FFF"; els.rouletteMsg.style.borderColor = "#FFF";
             gameLoop();
         }
 
@@ -543,7 +536,9 @@
             setTimeout(() => playScript(SCRIPTS.stage2Clear, initRadar), 2000);
         }
 
-        // Radar Logic
+        // Radar Logic with Hold Timer
+        let lockTimer = null;
+
         function initRadar() {
             els.radarBtn.innerText = "ACTIVATE SENSORS";
             els.radarBtn.disabled = false; els.radarBtn.style.opacity = 1;
@@ -562,13 +557,41 @@
         function handleOrientation(e) {
             let heading = e.webkitCompassHeading || Math.abs(e.alpha - 360);
             els.compassUI.style.transform = `rotate(-${heading}deg)`;
+            
+            // 判定範圍：北方 (350~360 或 0~10)
             if (heading > 350 || heading < 10) {
                 if(els.radarLock.classList.contains('lock-active')) return;
-                els.radarLock.classList.add('lock-active');
-                els.radarBtn.innerText = "🔒 LOCKED: NORTH"; els.radarBtn.style.opacity = 1; 
-                els.radarBtn.style.background = "var(--primary-color)"; els.radarBtn.style.color = "#000";
-                if(navigator.vibrate) navigator.vibrate(200);
-                setTimeout(() => { window.removeEventListener('deviceorientation', handleOrientation); playScript(SCRIPTS.final); }, 1000);
+
+                // 開始鎖定計時
+                if (!lockTimer) {
+                    els.radarBtn.innerText = "LOCKING... (HOLD)";
+                    els.radarBtn.classList.add('locking-mode'); // 變黃色
+                    if(navigator.vibrate) navigator.vibrate(50);
+                    
+                    lockTimer = setTimeout(() => {
+                        // 鎖定成功
+                        lockTimer = null;
+                        els.radarBtn.classList.remove('locking-mode');
+                        els.radarLock.classList.add('lock-active');
+                        els.radarBtn.innerText = "🔒 LOCKED: NORTH"; 
+                        els.radarBtn.style.opacity = 1; 
+                        els.radarBtn.style.background = "var(--primary-color)"; 
+                        els.radarBtn.style.color = "#000";
+                        if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                        setTimeout(() => { 
+                            window.removeEventListener('deviceorientation', handleOrientation); 
+                            playScript(SCRIPTS.final); 
+                        }, 1000);
+                    }, CONFIG.radarHoldTime);
+                }
+            } else {
+                // 偏離目標，取消計時
+                if (lockTimer) {
+                    clearTimeout(lockTimer);
+                    lockTimer = null;
+                    els.radarBtn.classList.remove('locking-mode');
+                    els.radarBtn.innerText = "SEARCHING...";
+                }
             }
         }
 
