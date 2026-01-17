@@ -3,141 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>乾卦・破曉之光</title>
+    <title>乾卦・破曉之光 | CYBERPUNK VER.</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=VT323&display=swap" rel="stylesheet">
 
     <style>
         /* ====================
-           1. CSS 樣式 (V9 影院版 - Polished)
+           CYBERPUNK CSS THEME CORE
            ==================== */
         :root {
-            --primary-color: #00FF00;
-            --bg-color: #000000;
-            --alert-color: #FF3333;
-            --text-font: 'Courier New', Courier, monospace;
+            /* 擴充色板 */
+            --primary-color: #0f0;   /* Neon Green (數據) */
+            --secondary-color: #0ff; /* Cyber Cyan (UI邊框) */
+            --accent-color: #f0f;    /* Magenta (警告/強調) */
+            --bg-color: #020205;     /* 深空黑藍 */
+            --bg-dark: rgba(0, 5, 10, 0.9);
+            
+            /* 字體組合 */
+            --mono-font: 'VT323', 'Courier New', monospace; /* 復古像素感 */
+            --tech-font: 'Orbitron', sans-serif; /* 未來感標題 */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: var(--bg-color); color: var(--primary-color);
-            font-family: var(--text-font); overflow: hidden; touch-action: none;
-            user-select: none;
-            /* 防止 iOS 滾動回彈 */
+            background-color: var(--bg-color); 
+            color: var(--primary-color);
+            font-family: var(--mono-font); font-size: 18px;
+            overflow: hidden; touch-action: none; user-select: none;
             overscroll-behavior: none;
+            /* 加入微妙的背景數位網格 */
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
-        /* 載入層 */
+        /* --- V9 核心特效：CRT 掃描線覆蓋層 --- */
+        body::after {
+            content: " ";
+            display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 9990; pointer-events: none; background-size: 100% 2px, 3px 100%;
+        }
+        /* 螢幕四周暈影 */
+        body::before {
+            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.8) 100%);
+            z-index: 9991; pointer-events: none;
+        }
+
+        /* 通用霓虹文字特效 */
+        h1, h2, .glow-text {
+            font-family: var(--tech-font);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px var(--secondary-color), 0 0 15px var(--primary-color);
+        }
+
+        /* ====================
+           UI 組件
+           ==================== */
+        
+        /* 載入層 - 加入 Glitch 效果 */
         #loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-color);
             display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
         }
-        .loading-text { font-size: 1.2rem; animation: blink 1s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .hidden { display: none !important; }
+        .loading-text { 
+            font-size: 1.5rem; 
+            animation: glitch-pulse 1s infinite alternate;
+            position: relative;
+        }
+        /* 簡單的文字故障動畫 */
+        @keyframes glitch-pulse {
+            0% { text-shadow: 2px 0 0 var(--accent-color), -2px 0 0 var(--secondary-color); opacity: 1;}
+            20% { text-shadow: 2px 0 0 var(--accent-color), -2px 0 0 var(--secondary-color); opacity: 0.8;}
+            50% { text-shadow: -2px 0 0 var(--accent-color), 2px 0 0 var(--secondary-color); opacity: 1; transform: skewX(-2deg);}
+            100% { text-shadow: 2px 0 0 var(--accent-color), -2px 0 0 var(--secondary-color); opacity: 1;}
+        }
 
+        /* Cyberpunk 按鈕 */
         #start-btn {
-            margin-top: 20px; padding: 12px 30px; /* 加大觸控區 */
-            border: 1px solid var(--primary-color); background: rgba(0, 255, 0, 0.1);
-            color: var(--primary-color); font-size: 1rem; cursor: pointer;
-            transition: all 0.2s;
+            margin-top: 30px; padding: 15px 40px;
+            font-family: var(--tech-font); font-size: 1.2rem; letter-spacing: 2px;
+            color: var(--secondary-color);
+            background: transparent;
+            border: 2px solid var(--secondary-color);
+            /* 製作切角效果 */
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3), inset 0 0 15px rgba(0, 255, 255, 0.1);
+            cursor: pointer; transition: all 0.3s;
+            position: relative; overflow: hidden;
         }
-        #start-btn:active { background: var(--primary-color); color: #000; }
+        #start-btn::before { /* 按鈕掃光特效 */
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+        #start-btn:hover::before { left: 100%; }
+        #start-btn:active { background: var(--secondary-color); color: #000; box-shadow: 0 0 30px var(--secondary-color); }
 
-        /* V9 重點：背景內容層 */
-        #content-layer {
-            width: 100%; height: 100%;
-            transition: filter 0.5s ease;
-            will-change: filter; /* 效能優化 */
-        }
-        
-        .content-dimmed {
-            filter: brightness(0.3) blur(2px);
-        }
+        /* 內容層與變暗 */
+        #content-layer { width: 100%; height: 100%; transition: filter 0.5s ease; will-change: filter; }
+        .content-dimmed { filter: brightness(0.2) blur(3px) grayscale(50%); }
 
         .stage-box {
             width: 100%; height: 100%; position: relative;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            text-align: center; padding-top: 20px;
+            text-align: center; padding-top: 30px;
         }
 
-        .gps-status { font-size: 0.9rem; margin-top: 10px; color: var(--alert-color); min-height: 1.2em; }
+        .gps-status { font-size: 1rem; margin-top: 15px; color: var(--accent-color); min-height: 1.2em; text-shadow: 0 0 5px var(--accent-color); }
+        
+        /* GPS 重試按鈕樣式 */
+        #gps-retry-btn {
+            margin-top: 20px; padding: 8px 20px;
+            border: 1px solid var(--accent-color); background: rgba(255, 0, 255, 0.1);
+            color: var(--accent-color); font-family: var(--mono-font); cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+        }
 
-        /* 對話框層 */
+        /* ====================
+           對話框系統 (HUD 風格)
+           ==================== */
         #dialog-layer {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 100;
+            pointer-events: none; z-index: 9995; /* 在掃描線之上 */
             display: flex; flex-direction: column; justify-content: flex-end;
-            padding-bottom: env(safe-area-inset-bottom, 30px); /* 適配 iPhone 底部橫條 */
+            padding-bottom: env(safe-area-inset-bottom, 20px);
         }
 
         #dialog-box {
-            position: relative; width: 90%; margin: 0 auto 20px auto;
-            background: rgba(0, 15, 0, 0.95);
-            border: 2px solid var(--primary-color);
-            padding: 20px; text-align: left;
+            position: relative; width: 94%; margin: 0 auto 20px auto;
+            background: linear-gradient(180deg, rgba(0, 20, 30, 0.95) 0%, rgba(0, 10, 15, 0.98) 100%);
+            /* 雙色邊框 */
+            border: 2px solid var(--secondary-color);
+            border-bottom: 4px solid var(--primary-color);
+            padding: 25px 20px 20px 20px; text-align: left;
             pointer-events: auto;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            /* 強烈光暈 */
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.8);
             cursor: pointer;
         }
-        
-        #dialog-box:active { transform: scale(0.98); }
+        /* 裝飾性的資料線條 */
+        #dialog-box::before {
+            content: 'DATA_STREAM // INCOMING_TRANSMISSION';
+            position: absolute; top: -12px; left: 10px;
+            font-size: 0.7rem; color: var(--secondary-color); background: var(--bg-color);
+            padding: 2px 10px; border: 1px solid var(--secondary-color);
+            letter-spacing: 1px;
+        }
 
         .speaker { 
-            font-weight: bold; margin-bottom: 8px; color: #000; background: var(--primary-color); 
-            display: inline-block; padding: 2px 8px; font-size: 0.9rem;
+            font-family: var(--tech-font); font-size: 0.9rem; letter-spacing: 1px;
+            font-weight: bold; margin-bottom: 10px; color: #000; 
+            background: var(--secondary-color); /* 預設改為藍色 */
+            display: inline-block; padding: 4px 10px; 
+            box-shadow: 0 0 10px var(--secondary-color);
+            transform: skewX(-10deg); /*稍微傾斜 */
         }
         .dialog-text { 
-            font-size: 1.1rem; line-height: 1.5; color: #FFF; min-height: 3.3rem; 
+            font-size: 1.2rem; line-height: 1.4; color: #e0ffe0; min-height: 3.6rem; 
             white-space: pre-wrap; 
+            text-shadow: 0 0 2px rgba(0, 255, 0, 0.5);
         }
         
-        .cursor { display: inline-block; width: 10px; height: 1.2rem; background: var(--primary-color); animation: blink 0.8s infinite; vertical-align: middle; margin-left: 2px;}
+        .cursor { display: inline-block; width: 12px; height: 1.3rem; background: var(--primary-color); animation: blink 0.8s infinite; vertical-align: middle; margin-left: 4px; box-shadow: 0 0 5px var(--primary-color);}
 
         .next-arrow {
             position: absolute; bottom: 10px; right: 15px;
-            color: var(--primary-color); font-size: 1.2rem;
-            animation: bounce 1s infinite;
+            color: var(--secondary-color); font-size: 1.5rem;
+            animation: bounce 1s infinite; text-shadow: 0 0 10px var(--secondary-color);
         }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
 
-        /* 刮刮樂容器 */
+        /* ====================
+           刮刮樂與轉場
+           ==================== */
         .scratch-container {
             position: relative;
-            width: 90vw; height: 60vw;
-            max-width: 600px; max-height: 400px;
+            width: 90vw; height: 60vw; max-width: 600px; max-height: 400px;
             margin: 20px auto;
-            border: 2px solid var(--primary-color);
-            overflow: hidden;
-            background-color: #000;
-            transition: opacity 1s;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4), inset 0 0 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden; background-color: #000; transition: opacity 1s;
         }
-        .scratch-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
-        .scratch-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; touch-action: none; }
+        #scratch-progress {
+            font-family: var(--tech-font); color: var(--secondary-color); letter-spacing: 1px;
+            text-shadow: 0 0 5px var(--secondary-color);
+        }
 
-        /* 高原式白光曲線 */
         #flash-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; opacity: 0; pointer-events: none; z-index: 9999;
+            /* 轉場改為強烈的青白光 */
+            background: rgb(200, 255, 255); 
+            opacity: 0; pointer-events: none; z-index: 9999;
+            mix-blend-mode: hard-light; /* 讓閃光更強烈 */
         }
         .flash-active { animation: flashPlateau 4s forwards; }
         
-        @keyframes flashPlateau {
-            0% { opacity: 0; }
-            20% { opacity: 1; }
-            60% { opacity: 1; }
-            100% { opacity: 0; }
-        }
+        .hidden { display: none !important; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+        @keyframes flashPlateau { 0% { opacity: 0; } 20% { opacity: 1; } 60% { opacity: 1; } 100% { opacity: 0; } }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
-        <div class="loading-text">SYSTEM INITIALIZING...</div>
-        <div class="loading-text" style="font-size: 0.8rem; margin-top: 10px;" id="status-log">Checking LIFF...</div>
-        <button id="start-btn" class="hidden">TOUCH TO START</button>
+        <div class="loading-text glow-text">SYSTEM BOOT SEQUENCE</div>
+        <div style="width: 200px; height: 4px; background: #333; margin: 20px 0; position: relative; overflow: hidden;">
+            <div style="position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: var(--primary-color); box-shadow: 0 0 10px var(--primary-color); animation: loadBar 2s infinite ease-in-out;"></div>
+        </div>
+        <div class="loading-text" style="font-size: 0.9rem; color: var(--secondary-color);" id="status-log">CONNECTING TO NEURAL NET...</div>
+        <button id="start-btn" class="hidden">INITIALIZE LINK</button>
     </div>
 
     <div id="flash-overlay"></div>
@@ -146,25 +227,25 @@
         <div id="game-container" class="hidden">
             
             <div id="stage-1" class="stage-box">
-                <h2 id="stage-title">連結時空座標...</h2>
+                <h2 id="stage-title">建立時空錨點...</h2>
                 
                 <div id="gps-area">
-                    <div id="gps-msg" class="gps-status">WAITING FOR SIGNAL...</div>
-                    <button id="gps-retry-btn" class="hidden" style="border:1px solid red; background:none; color:red; padding:10px; margin-top:20px;">重新掃描訊號</button>
+                    <div style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 20px;">🛰️</div>
+                    <div id="gps-msg" class="gps-status">AWAITING SATELLITE LOCK...</div>
+                    <button id="gps-retry-btn" class="hidden">重新掃描訊號</button>
                 </div>
 
                 <div id="scratch-area" class="hidden" style="opacity: 0;">
                     <div class="scratch-container">
-                        <img id="img-base" class="scratch-bg" />
-                        <canvas id="cvs-cover" class="scratch-canvas"></canvas>
+                        <img id="img-base" class="scratch-bg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; filter: sepia(1) hue-rotate(180deg) contrast(1.2);" /> <canvas id="cvs-cover" class="scratch-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; touch-action: none;"></canvas>
                     </div>
-                    <p id="scratch-progress">SYNC: 0%</p>
+                    <p id="scratch-progress">SYNC RATE: 0%</p>
                 </div>
             </div>
 
             <div id="stage-2" class="stage-box hidden">
-                <h1 style="margin-top: 50%;">STAGE 2</h1>
-                <p>頻率校準中...</p>
+                <h1 style="margin-top: 50%; font-size: 3rem;">STAGE 02</h1>
+                <p class="glow-text" style="color: var(--secondary-color);">光譜轉盤校準中...</p>
             </div>
 
         </div>
@@ -180,74 +261,42 @@
 
     <script>
         /* ====================
-           CONFIGURATION (設定區)
+           Javascript 邏輯保持不變
            ==================== */
         const CONFIG = {
-            liffId: "2008882930-UEAr0VU4", // 你的 LIFF ID
-            devMode: true,                 // 測試模式 (跳過 GPS 檢查)
-            target: { lat: 22.615556, lng: 120.265833 }, // 目標：高雄燈塔 (Cijin)
-            radius: 150,                   // 允許誤差 (公尺)
-            scratchThreshold: 65           // 刮開多少比例算過關 (%)
+            liffId: "2008882930-UEAr0VU4", 
+            devMode: true,                 
+            target: { lat: 22.615556, lng: 120.265833 }, 
+            radius: 150,                   
+            scratchThreshold: 65           
         };
 
-        /* 劇本庫：集中管理台詞，方便修改 */
         const SCRIPTS = {
             intro: [
-                { name: "阿水 (語音雜訊)", text: "（滋...）不行！座標對不上... 時空亂流太強了！" },
-                { name: "阿水 (語音雜訊)", text: "系統說需要一個『強力的現地證明』... 你現在真的在燈塔那邊嗎？" },
-                { name: "系統", text: "正在啟動 GPS 掃描模組..." }
+                { name: "阿水 (雜訊)", text: "（滋...滋...）訊號...被干擾了！時空亂流指數飆升中！" },
+                { name: "阿水 (雜訊)", text: "系統偵測到你附近有強向量反應... 你現在人在燈塔熱點嗎？" },
+                { name: "系統AI", text: "啟動現地認證協議。正在掃描 GPS 頻段..." }
             ],
             gpsSuccess: [
-                { name: "系統", text: "位置已確認。偵測到時空遮蔽力場。" },
-                { name: "系統", text: "正在載入影像解碼器..." }
+                { name: "系統AI", text: "位置確認：旗後山頂節點。偵測到高密度時空遮蔽力場。" },
+                { name: "系統AI", text: "正在掛載影像解碼模組..." }
             ],
             scratchIntro: [
-                { name: "阿水", text: "連上了！...但我看到的景象很模糊... 這白色的塔... 不是我這裡的樣子啊？" },
-                { name: "粽哥", text: "兩個時代的影像正在衝突。幫幫他，用手指把現代的偽裝刮開！" },
-                { name: "系統", text: "請開始刮開畫面，同步時空視野。" }
+                { name: "阿水", text: "連上了！...但我這裡的畫面充滿雜訊... 這白色的結構體... 不是我記憶中的樣子！" },
+                { name: "粽哥 (通訊)", text: "兩個時間線的數據正在衝突。操作員，用你的生物電場（手指）刮開現代的偽裝圖層！" },
+                { name: "系統AI", text: "請開始同步視覺數據。" }
             ],
             stage1Clear: [
-                { name: "阿水", text: "看見了！紅色的磚牆... 這就是我這裡的燈塔！" },
-                { name: "阿水", text: "坐標同步了！謝謝你！" },
-                { name: "系統", text: "Stage 1 完成。正在初始化光譜轉盤..." }
+                { name: "阿水", text: "雜訊清除了！紅色的磚牆... 沒錯，這就是我這個座標的燈塔！" },
+                { name: "阿水", text: "錨點同步完成！這下訊號穩定了！" },
+                { name: "系統AI", text: "STAGE 1 完成。正在初始化光譜轉盤介面..." }
             ]
         };
 
-        /* ====================
-           ASSETS (資源管理)
-           ==================== */
-        // 建議填入實際的 Base64 或 圖片 URL
-        // 提示：若使用 URL，請確保 Server 支援 CORS，否則 Canvas 會報錯 (Tainted)
-        const ASSETS = {
-            images: {
-                modern: null, // 遮罩層 (刮掉的部分，現代)
-                old: null     // 底層 (顯示的部分，舊時代)
-            }
-        };
+        const ASSETS = { images: { modern: null, old: null } };
+        function loadImages() { return new Promise(resolve => { resolve(); }); }
+        function createImg(src) { if(!src) return null; const img = new Image(); img.crossOrigin = "Anonymous"; img.src = src; return img; }
 
-        // 簡易圖片載入器
-        function loadImages() {
-            // 這裡放你的 Base64 或是圖片連結
-            // 為了示範，我產生兩個簡單的 Placeholder
-            return new Promise(resolve => {
-                // 模擬載入... (實際專案請填入你的 Base64 字串)
-                // ASSETS.images.modern = createImg("...");
-                // ASSETS.images.old = createImg("...");
-                resolve();
-            });
-        }
-        
-        function createImg(src) {
-            if(!src) return null;
-            const img = new Image();
-            img.crossOrigin = "Anonymous"; // 防止 CORS 污染
-            img.src = src;
-            return img;
-        }
-
-        /* ====================
-           SYSTEM CORE
-           ==================== */
         const els = {
             log: document.getElementById('status-log'),
             startBtn: document.getElementById('start-btn'),
@@ -264,7 +313,6 @@
 
         function log(msg) { els.log.innerText = msg; console.log(`[Sys] ${msg}`); }
 
-        // --- 打字機系統 ---
         let scriptQueue = [];
         let onScriptComplete = null;
         let typingTimer = null;
@@ -272,7 +320,7 @@
         let isTyping = false;
 
         function playScript(script, callback) {
-            scriptQueue = [...script]; // 複製一份以免影響原陣列
+            scriptQueue = [...script]; 
             onScriptComplete = callback;
             els.dialogLayer.classList.remove('hidden');
             els.content.classList.add('content-dimmed');
@@ -291,10 +339,20 @@
             els.speaker.innerText = line.name;
             currentFullText = line.text;
 
-            // 根據角色換色 (可以擴充)
-            if (line.name.includes("阿水")) els.speaker.style.backgroundColor = "#00AA00";
-            else if (line.name === "粽哥") els.speaker.style.backgroundColor = "#888888"; 
-            else els.speaker.style.backgroundColor = "var(--primary-color)";
+            // 更新角色的 Cyberpunk 配色
+            if (line.name.includes("阿水")) {
+                els.speaker.style.backgroundColor = "var(--primary-color)"; // 綠色
+                els.speaker.style.color = "#000";
+                els.speaker.style.boxShadow = "0 0 10px var(--primary-color)";
+            } else if (line.name.includes("粽哥")) {
+                els.speaker.style.backgroundColor = "#555"; 
+                els.speaker.style.color = "#fff";
+                els.speaker.style.boxShadow = "none";
+            } else { // 系統 AI
+                els.speaker.style.backgroundColor = "var(--secondary-color)"; // 藍色
+                els.speaker.style.color = "#000";
+                els.speaker.style.boxShadow = "0 0 10px var(--secondary-color)";
+            }
 
             startTyping(currentFullText);
         }
@@ -311,7 +369,7 @@
                 els.text.innerHTML = text.substring(0, i+1) + cursor;
                 i++;
                 if (i >= text.length) finishTyping();
-            }, 40); // 稍微加快打字速度
+            }, 35); 
         }
 
         function finishTyping() {
@@ -329,21 +387,18 @@
             }
         });
 
-        // --- 初始化流程 ---
         async function initSystem() {
             try {
-                log("Init LIFF...");
+                log("INIT LIFF CORE...");
                 await liff.init({ liffId: CONFIG.liffId });
-                // 載入圖片資源
                 await loadImages();
                 
-                log("Ready.");
+                log("SYSTEM READY.");
                 if (!liff.isLoggedIn()) { liff.login(); return; }
                 
                 els.startBtn.classList.remove('hidden');
             } catch (err) { 
-                log("Error: " + err.message); 
-                // 即使 LIFF 失敗也允許在 Dev 模式下運行
+                log("ERROR: " + err.message); 
                 if(CONFIG.devMode) els.startBtn.classList.remove('hidden');
             }
         }
@@ -354,15 +409,15 @@
             playScript(SCRIPTS.intro, checkGPS);
         });
 
-        // --- GPS 邏輯 ---
         function checkGPS() {
             const msgBox = document.getElementById('gps-msg');
             const retryBtn = document.getElementById('gps-retry-btn');
             
-            msgBox.innerText = "掃描中...";
+            msgBox.innerText = "SCANNING COORDINATES...";
+            msgBox.style.color = "var(--secondary-color)";
             retryBtn.classList.add('hidden');
 
-            if (!navigator.geolocation) { msgBox.innerText = "裝置不支援 GPS"; return; }
+            if (!navigator.geolocation) { msgBox.innerText = "GPS MODULE NOT FOUND"; msgBox.style.color = "var(--accent-color)"; return; }
 
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -371,25 +426,27 @@
                     const dist = getDistanceFromLatLonInKm(lat, lng, CONFIG.target.lat, CONFIG.target.lng) * 1000;
 
                     if (CONFIG.devMode || dist < CONFIG.radius) {
-                        msgBox.innerText = `📍 位置確認：旗後山 (${dist.toFixed(0)}m)`;
+                        msgBox.innerText = `📍 NODE ACQUIRED: 旗後山 (${dist.toFixed(0)}m)`;
                         msgBox.style.color = "var(--primary-color)";
+                        msgBox.style.textShadow = "0 0 10px var(--primary-color)";
                         setTimeout(() => playScript(SCRIPTS.gpsSuccess, initScratchGame), 1000);
                     } else {
-                        msgBox.innerText = `⚠️ 距離目標還有 ${(dist).toFixed(0)}m`;
-                        msgBox.style.color = "var(--alert-color)";
+                        msgBox.innerText = `⚠️ SIGNAL WEAK: TARGET DELTA ${(dist).toFixed(0)}m`;
+                        msgBox.style.color = "var(--accent-color)";
+                        msgBox.style.textShadow = "0 0 10px var(--accent-color)";
                         retryBtn.classList.remove('hidden');
                         retryBtn.onclick = checkGPS;
                     }
                 },
                 (err) => {
-                    msgBox.innerText = "無法取得位置 (請開啟 GPS)";
+                    msgBox.innerText = "LOCATION DATA ACCESS DENIED";
+                    msgBox.style.color = "var(--accent-color)";
                     retryBtn.classList.remove('hidden');
                     retryBtn.onclick = checkGPS;
                 }, { enableHighAccuracy: true, timeout: 5000 }
             );
         }
 
-        // --- 刮刮樂邏輯 (Stage 1) ---
         function initScratchGame() {
             const scratchArea = document.getElementById('scratch-area');
             scratchArea.classList.remove('hidden');
@@ -407,105 +464,75 @@
             const imgBase = document.getElementById('img-base');
             const container = canvas.parentElement;
 
-            // 設定舊圖 (如果有資源)
             if (ASSETS.images.old) imgBase.src = ASSETS.images.old.src;
 
-            // --- 重點優化：處理 Retina 螢幕模糊問題 ---
             const dpr = window.devicePixelRatio || 1;
             const rect = container.getBoundingClientRect();
-            
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
-            
-            // 縮放 Context 以匹配 CSS 尺寸
             ctx.scale(dpr, dpr); 
 
             const drawLayer = () => {
                 ctx.globalCompositeOperation = 'source-over';
                 if (ASSETS.images.modern && ASSETS.images.modern.complete) {
-                    // 使用 rect.width/height 繪製到邏輯尺寸
                     ctx.drawImage(ASSETS.images.modern, 0, 0, rect.width, rect.height);
                 } else {
-                    // 預設遮罩顏色
-                    ctx.fillStyle = '#CCCCCC'; 
+                    // Cyberpunk 風格的預設遮罩
+                    ctx.fillStyle = '#0a0a0a'; 
                     ctx.fillRect(0, 0, rect.width, rect.height);
-                    ctx.fillStyle = '#000';
-                    ctx.font = "20px Courier";
-                    ctx.fillText("NO SIGNAL IMAGE", 50, 50);
+                    // 繪製一些科幻網格
+                    ctx.strokeStyle = 'rgba(0, 255, 255, 0.2)';
+                    ctx.lineWidth = 1;
+                    for(let i=0; i<rect.width; i+=30) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,rect.height); ctx.stroke(); }
+                    for(let i=0; i<rect.height; i+=30) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(rect.width,i); ctx.stroke(); }
+                    
+                    ctx.fillStyle = 'var(--secondary-color)';
+                    ctx.font = "bold 24px Orbitron";
+                    ctx.fillText("NO SIGNAL // MASK LAYER", 30, rect.height/2);
                 }
-                // 設定筆刷模式
                 ctx.globalCompositeOperation = 'destination-out';
-                ctx.lineWidth = 40; 
-                ctx.lineCap = 'round'; 
-                ctx.lineJoin = 'round';
+                ctx.lineWidth = 40; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
             };
 
-            // 確保圖片載入後繪製
             if (ASSETS.images.modern && !ASSETS.images.modern.complete) {
                 ASSETS.images.modern.onload = drawLayer;
             } else { drawLayer(); }
 
-            // 觸控事件
             let isDrawing = false;
-            
-            // 取得正確的觸控座標 (修正 dpr 與 offset)
             const getPos = (e) => {
                 const touch = e.touches[0];
                 const r = canvas.getBoundingClientRect();
-                return {
-                    x: touch.clientX - r.left,
-                    y: touch.clientY - r.top
-                };
+                return { x: touch.clientX - r.left, y: touch.clientY - r.top };
             };
 
             canvas.addEventListener('touchstart', (e) => { 
-                isDrawing = true; 
-                e.preventDefault(); // 防止滾動
-                const pos = getPos(e);
-                ctx.beginPath();
-                ctx.moveTo(pos.x, pos.y);
+                isDrawing = true; e.preventDefault();
+                const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y);
             }, { passive: false });
 
             canvas.addEventListener('touchmove', (e) => {
-                if (!isDrawing) return;
-                e.preventDefault(); // 強制防止滾動
+                if (!isDrawing) return; e.preventDefault();
                 const pos = getPos(e);
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-                
-                // 增加圓點讓快速移動時線條更圓滑
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, 20, 0, Math.PI*2);
-                ctx.fill();
-                
-                ctx.beginPath();
-                ctx.moveTo(pos.x, pos.y);
+                ctx.lineTo(pos.x, pos.y); ctx.stroke();
+                ctx.beginPath(); ctx.arc(pos.x, pos.y, 20, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(pos.x, pos.y);
             }, { passive: false });
 
             canvas.addEventListener('touchend', () => {
-                isDrawing = false;
-                checkProgress(ctx, canvas.width, canvas.height); // check logic uses real pixels
+                isDrawing = false; checkProgress(ctx, canvas.width, canvas.height);
             });
         }
 
         let stage1Finished = false;
         function checkProgress(ctx, w, h) {
             if (stage1Finished) return; 
-
-            // 注意：getImageData 取的是物理像素 (Device Pixels)
-            // 為了效能，我們只抽樣檢查，不用查每一個 pixel
             const data = ctx.getImageData(0, 0, w, h).data;
-            let transparent = 0;
-            const sampleRate = 32; // 提高抽樣間隔以增加效能
-            
-            for(let i = 3; i < data.length; i += 4 * sampleRate) { 
-                if(data[i] < 128) transparent++; 
-            }
-            
+            let transparent = 0; const sampleRate = 32;
+            for(let i = 3; i < data.length; i += 4 * sampleRate) { if(data[i] < 128) transparent++; }
             const totalSamples = data.length / (4 * sampleRate);
             const percent = Math.floor((transparent / totalSamples) * 100);
             
-            document.getElementById('scratch-progress').innerText = `SYNC: ${percent}%`;
+            document.getElementById('scratch-progress').innerText = `SYNC RATE: ${percent}%`;
             
             if (percent > CONFIG.scratchThreshold) {
                 stage1Finished = true;
@@ -514,28 +541,19 @@
         }
 
         function finishStage1() {
-            // 觸發震動
-            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-            
+            if (navigator.vibrate) navigator.vibrate([50, 30, 50, 30, 200]); // 更強烈的震動
             setTimeout(() => {
                 els.flash.classList.add('flash-active');
-                
-                // 動畫中段換景
                 setTimeout(() => {
                     document.getElementById('stage-1').classList.add('hidden');
                     document.getElementById('stage-2').classList.remove('hidden');
-                    
                     setTimeout(() => {
-                        playScript(SCRIPTS.stage1Clear, () => {
-                            console.log("Enter Stage 2 Logic");
-                        });
+                        playScript(SCRIPTS.stage1Clear, () => { console.log("Stage 2 Start"); });
                     }, 2000); 
                 }, 1500); 
-
             }, 1000); 
         }
 
-        // --- Utils ---
         function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
             var R = 6371; var dLat = deg2rad(lat2-lat1); var dLon = deg2rad(lon2-lon1);
             var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(deg2rad(lat1))*Math.cos(deg2rad(lat2))*Math.sin(dLon/2)*Math.sin(dLon/2);
@@ -544,6 +562,11 @@
         function deg2rad(deg) { return deg*(Math.PI/180); }
 
         window.onload = initSystem;
+        
+        // 加入讀取條動畫
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes loadBar { 0% { left: -50%; } 100% { left: 100%; } }`;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
