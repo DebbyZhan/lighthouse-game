@@ -12,13 +12,14 @@
            CYBERPUNK VISUAL CORE
            ==================== */
         :root {
-            --primary-color: #0f0;   /* Green */
-            --secondary-color: #0ff; /* Cyan */
-            --accent-color: #f0f;    /* Magenta */
-            --warn-color: #ff3333;   /* Red */
-            --bg-color: #020205;
+            --primary-color: #0f0;   
+            --secondary-color: #0ff; 
+            --accent-color: #f0f;    
+            --warn-color: #ff2a2a;   /* 更鮮豔的紅 */
+            --bg-color: #050508;
             --mono-font: 'VT323', monospace;
             --tech-font: 'Orbitron', sans-serif;
+            --tension-level: 0; /* 0 to 1, JS控制 */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -30,9 +31,9 @@
             overflow: hidden; touch-action: none; user-select: none;
             overscroll-behavior: none;
             background-image: 
-                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 20px 20px;
+                linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
         }
 
         /* CRT Effects */
@@ -41,12 +42,7 @@
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
             z-index: 9990; pointer-events: none; background-size: 100% 2px, 3px 100%;
         }
-        body::before {
-            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.8) 100%);
-            z-index: 9991; pointer-events: none;
-        }
-
+        
         .hidden { display: none !important; }
         .glow-text { text-shadow: 0 0 5px var(--secondary-color), 0 0 15px var(--primary-color); }
         
@@ -54,7 +50,7 @@
         .cyber-btn {
             padding: 15px 30px; margin-top: 25px;
             font-family: var(--tech-font); font-size: 1.2rem; letter-spacing: 2px;
-            color: var(--secondary-color); background: rgba(0, 20, 30, 0.8);
+            color: var(--secondary-color); background: rgba(0, 20, 30, 0.9);
             border: 2px solid var(--secondary-color);
             clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
@@ -64,8 +60,7 @@
         .cyber-btn:active { background: var(--secondary-color); color: #000; transform: scale(0.98); }
         .cyber-btn.glitch-mode {
             color: #FFF; background: var(--warn-color); border-color: #FFF;
-            box-shadow: 0 0 20px var(--warn-color);
-            animation: shake 0.2s infinite;
+            box-shadow: 0 0 20px var(--warn-color); animation: shake 0.2s infinite;
         }
         .cyber-btn.locking-mode {
             color: #000; background: #ffff00; border-color: #ffff00;
@@ -73,7 +68,7 @@
         }
 
         /* Layout */
-        #content-layer { width: 100%; height: 100%; transition: filter 0.5s ease; }
+        #content-layer { width: 100%; height: 100%; transition: filter 0.5s ease; will-change: filter, opacity; }
         .content-dimmed { filter: brightness(0.2) blur(3px) grayscale(50%); }
         .stage-box { 
             width: 100%; height: 100%; display: flex; flex-direction: column; 
@@ -81,7 +76,7 @@
             padding-bottom: 20vh;
         }
 
-        /* STAGE 1 */
+        /* STAGE 1: Scratch */
         .scratch-container {
             width: 85vw; height: 60vw; max-width: 500px; max-height: 350px;
             position: relative; margin: 20px auto;
@@ -89,7 +84,7 @@
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
             background: #000;
         }
-        #scratch-progress { font-family: var(--tech-font); color: var(--secondary-color); margin-top: 10px; font-size: 1.2rem; }
+        #scratch-progress { font-family: var(--tech-font); color: var(--secondary-color); margin-top: 10px; }
 
         /* STAGE 2: Roulette */
         .roulette-container {
@@ -99,32 +94,17 @@
         }
         #color-wheel {
             width: 100%; height: 100%; border-radius: 50%;
-            /* 顏色分佈：紅(0-60) / 白(60-120) / 綠 / 藍 / 黑 / 灰 */
-            background: conic-gradient(
-                #FF0000 0deg 60deg, 
-                #FFFFFF 60deg 120deg,
-                #00FF00 120deg 180deg, 
-                #0000FF 180deg 240deg, 
-                #111111 240deg 300deg, 
-                #555555 300deg 360deg
-            );
-            position: relative;
-        }
-        #color-wheel::after {
-            content: ''; position: absolute; top:0; left:0; width:100%; height:100%; border-radius:50%;
-            background: radial-gradient(circle, transparent 30%, #000 70%); 
+            background: conic-gradient(#FF0000 0deg 60deg, #FFFFFF 60deg 120deg, #00FF00 120deg 180deg, #0000FF 180deg 240deg, #111111 240deg 300deg, #555555 300deg 360deg);
         }
         .pointer {
             position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
             width: 0; height: 0;
-            border-left: 15px solid transparent; border-right: 15px solid transparent;
-            border-top: 25px solid var(--accent-color);
+            border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid var(--accent-color);
             filter: drop-shadow(0 0 5px var(--accent-color)); z-index: 10;
         }
         .target-display {
             font-family: var(--tech-font); font-size: 1.5rem; color: #FFF;
-            margin-bottom: 10px; border: 1px solid var(--secondary-color);
-            padding: 5px 20px; background: rgba(0,0,0,0.8);
+            margin-bottom: 10px; border: 1px solid var(--secondary-color); padding: 5px 20px; background: rgba(0,0,0,0.8);
         }
 
         /* STAGE 3: Radar */
@@ -141,11 +121,7 @@
             animation: radar-spin 2s linear infinite;
         }
         .compass-rose { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: transform 0.1s linear; }
-        .north-mark {
-            position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-            font-weight: bold; font-size: 1.2rem; color: var(--primary-color);
-            text-shadow: 0 0 5px var(--primary-color);
-        }
+        .north-mark { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); color: var(--primary-color); font-weight: bold; font-size: 1.2rem; }
         .lock-indicator {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 280px; height: 280px; border-radius: 50%;
@@ -153,88 +129,132 @@
         }
         .lock-active { border-color: var(--primary-color); border-width: 5px; box-shadow: 0 0 20px var(--primary-color); }
 
-        /* STAGE 4: Final Switch */
-        .switch-container {
-            position: relative; width: 260px; height: 400px;
-            background: #111; border: 4px solid #333;
-            border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            overflow: hidden; perspective: 1000px; margin-top: 20px;
+        /* ====================
+           STAGE 4: CYBERPUNK SWITCH (REMASTERED)
+           ==================== */
+        .switch-frame {
+            position: relative; width: 280px; height: 420px; margin-top: 20px;
+            background: #111;
+            /* 工業風切角外框 */
+            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+            border: 2px solid #333;
+            /* 邊框動態光暈 */
+            box-shadow: 0 0 calc(10px + 20px * var(--tension-level)) rgba(255, 50, 50, var(--tension-level));
+            overflow: hidden; perspective: 1000px;
         }
 
-        .hazard-stripes {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(
-                -45deg,
-                #f2c12e, #f2c12e 20px,
-                #1a1a1a 20px, #1a1a1a 40px
-            );
-            opacity: 0.8; z-index: 1;
+        /* 內部裝飾：網格與警示 */
+        .panel-bg {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background-image: 
+                linear-gradient(rgba(50,50,50,0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(50,50,50,0.5) 1px, transparent 1px);
+            background-size: 20px 20px; opacity: 0.3; z-index: 0;
+        }
+        .hazard-sides {
+            position: absolute; top:0; bottom:0; width: 20px;
+            background: repeating-linear-gradient(45deg, #000, #000 10px, #b8860b 10px, #b8860b 20px);
+            z-index: 1; opacity: 0.8;
+        }
+        .hazard-left { left: 0; border-right: 1px solid #555; }
+        .hazard-right { right: 0; border-left: 1px solid #555; }
+
+        /* 軌道槽 */
+        .track-channel {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 80px; height: 320px;
+            background: #000;
+            border: 2px solid #444; border-radius: 4px;
+            box-shadow: inset 0 0 20px #000;
+            z-index: 2;
+        }
+        /* 軌道中心能量流 */
+        .energy-stream {
+            position: absolute; left: 50%; top: 10px; bottom: 10px; width: 6px; transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.2);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        /* 當拉動時，能量流變強 */
+        .energy-stream.active {
+            background: rgba(255, 0, 0, 0.8);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.5);
         }
 
-        .lever-track {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px; height: 300px;
-            background: #000; border: 2px solid #555;
-            border-radius: 5px; z-index: 2;
-            box-shadow: inset 0 0 10px #000;
-        }
-
-        .track-groove {
-            position: absolute; left: 50%; top: 10px; bottom: 10px;
-            width: 10px; background: #222; transform: translateX(-50%);
-            border-radius: 5px; box-shadow: inset 0 0 5px #000;
-        }
-
+        /* 閘刀手柄 (Energy Cell Style) */
         .lever-handle {
-            position: absolute; top: 0; left: 50%;
-            transform: translateX(-50%);
-            width: 100px; height: 60px;
-            background: linear-gradient(to bottom, #cc0000, #990000);
-            border: 2px solid #ff3333; border-radius: 5px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            cursor: grab; z-index: 5; touch-action: none;
-            display: flex; align-items: center; justify-content: center;
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 110px; height: 70px;
+            z-index: 10; cursor: grab; touch-action: none;
         }
         
-        .handle-grip {
-            color: rgba(0,0,0,0.5); font-weight: bold; letter-spacing: 2px; font-family: sans-serif;
-            transform: rotate(90deg);
-        }
-
-        .safety-cover {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10; transform-origin: top center;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: auto; cursor: pointer;
-        }
-
-        .cover-glass {
+        .handle-body {
             width: 100%; height: 100%;
-            background: rgba(200, 255, 255, 0.15); /* 玻璃質感 */
-            border: 2px solid rgba(0, 255, 255, 0.3);
-            box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.1);
-            backdrop-filter: blur(2px);
+            background: linear-gradient(180deg, #222 0%, #111 100%);
+            border: 2px solid #555; border-radius: 6px;
+            /* 根據拉動程度發紅光 */
+            box-shadow: 0 0 calc(10px * var(--tension-level)) rgba(255, 0, 0, var(--tension-level));
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+        
+        /* 手柄中間的能量核心 */
+        .handle-core {
+            width: 80%; height: 60%;
+            background: repeating-linear-gradient(90deg, 
+                rgba(255,0,0,0.1), rgba(255,0,0,0.1) 2px, 
+                transparent 2px, transparent 5px);
+            border: 1px solid rgba(255,0,0,0.3);
+            box-shadow: inset 0 0 10px rgba(255,0,0,0.2);
             display: flex; align-items: center; justify-content: center;
         }
-
-        .cover-text {
-            border: 2px solid var(--warn-color); padding: 5px 15px;
-            color: var(--warn-color); font-family: var(--tech-font);
-            font-weight: bold; transform: rotate(-30deg);
-            text-shadow: 0 0 5px rgba(0,0,0,0.8); background: rgba(0,0,0,0.6);
+        .handle-text {
+            color: rgba(255, 255, 255, 0.7); font-family: var(--tech-font); font-size: 0.8rem; letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(255,0,0,0.5); pointer-events: none;
+        }
+        
+        /* 核心過載動畫 */
+        .lever-handle.surging .handle-core {
+            background: #ff0000;
+            box-shadow: 0 0 30px #ff0000;
+            animation: pulse-core 0.1s infinite;
         }
 
-        .safety-cover.open {
-            transform: rotateX(100deg); opacity: 0.5; pointer-events: none;
+        /* 安全蓋 */
+        .safety-cover {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20;
+            transform-origin: top center; transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            background: rgba(0, 20, 30, 0.6);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            display: flex; align-items: center; justify-content: center;
         }
+        .safety-cover::before { /* 掃描線紋路 */
+            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,255,0.05) 3px);
+            pointer-events: none;
+        }
+        .safety-cover.open { transform: rotateX(110deg); opacity: 0.2; pointer-events: none; }
+        .lock-icon { font-size: 3rem; color: var(--secondary-color); text-shadow: 0 0 20px var(--secondary-color); }
 
-        /* Whiteout Effect */
+        /* --- 光爆特效 (Light Bloom) --- */
+        #light-bloom {
+            position: absolute; left: 50%; bottom: 60px; /* 位於軌道底部 */
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #fff;
+            transform: translate(-50%, 50%) scale(0);
+            pointer-events: none; z-index: 999;
+            box-shadow: 0 0 50px 20px #fff;
+        }
+        .bloom-active { animation: lightExplosion 3s forwards cubic-bezier(0.1, 0, 0.9, 1); }
+
+        /* 全白遮罩 (配合光爆使用) */
         #whiteout-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #fff; z-index: 10000; opacity: 0; pointer-events: none;
+            mix-blend-mode: normal;
         }
-        .whiteout-active { animation: whiteoutAnim 3s forwards; }
+        .whiteout-fade-in { animation: smoothFadeIn 0.5s 0.2s forwards linear; }
 
         /* Dialog System */
         #dialog-layer {
@@ -263,7 +283,23 @@
         @keyframes shake { 0% { transform: translate(2px, 2px) rotate(0deg); } 25% { transform: translate(-2px, -2px) rotate(-2deg); } 50% { transform: translate(-2px, 2px) rotate(2deg); } 75% { transform: translate(2px, -2px) rotate(-1deg); } 100% { transform: translate(0, 0) rotate(0); } }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
         @keyframes flashPlateau { 0% { opacity: 0; } 20% { opacity: 1; } 60% { opacity: 1; } 100% { opacity: 0; } }
-        @keyframes whiteoutAnim { 0% { opacity: 0; } 5% { opacity: 1; } 20% { opacity: 1; } 100% { opacity: 1; background: #fff; } }
+        @keyframes pulse-core { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+        
+        /* 光爆動畫：從中心擴散，模擬過曝 */
+        @keyframes lightExplosion {
+            0% { transform: translate(-50%, 50%) scale(0); opacity: 1; }
+            10% { transform: translate(-50%, 50%) scale(5); opacity: 1; } 
+            40% { transform: translate(-50%, 50%) scale(50); opacity: 1; } /* 吞噬螢幕 */
+            100% { transform: translate(-50%, 50%) scale(100); opacity: 1; }
+        }
+        @keyframes smoothFadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+        /* 最終過曝效果 (在 JS 中動態加入) */
+        .content-overexposed {
+            transition: filter 0.2s ease-in;
+            filter: brightness(500%) contrast(200%) grayscale(100%) !important;
+        }
+
     </style>
 </head>
 <body>
@@ -321,25 +357,33 @@
         </div>
 
         <div id="stage-4" class="stage-box hidden">
-            <h2 class="glow-text" style="color:var(--warn-color);">FINAL SEQUENCE</h2>
-            <div id="instruction-msg" class="glow-text" style="margin-bottom: 20px;">WAITING FOR AUTHORIZATION...</div>
+            <h2 class="glow-text" style="color:var(--warn-color); margin-bottom: 5px;">MANUAL OVERRIDE</h2>
+            <div id="instruction-msg" style="font-size: 0.9rem; letter-spacing: 1px; color: #888; margin-bottom: 20px;">[WAITING FOR AUTH]</div>
             
-            <div class="switch-container">
-                <div class="hazard-stripes"></div>
+            <div class="switch-frame">
+                <div class="panel-bg"></div>
+                <div class="hazard-sides hazard-left"></div>
+                <div class="hazard-sides hazard-right"></div>
                 
-                <div class="lever-track">
-                    <div class="track-groove"></div>
+                <div class="track-channel">
+                    <div id="energy-stream" class="energy-stream"></div>
+                    <div id="light-bloom"></div>
+
                     <div id="lever-handle" class="lever-handle">
-                        <div class="handle-grip">|||</div>
+                        <div class="handle-body">
+                            <div class="handle-core">
+                                <span class="handle-text">///</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div id="safety-cover" class="safety-cover">
-                    <div class="cover-glass">
-                        <div class="glass-reflection"></div>
-                        <span class="cover-text">SAFETY LOCK</span>
+                    <div style="text-align:center;">
+                        <div class="lock-icon">🔒</div>
+                        <div style="margin-top:10px; font-family:var(--tech-font); color:var(--secondary-color);">SAFETY LOCK ENGAGED</div>
+                        <div style="font-size:0.8rem; color:#aaa; margin-top:5px;">TAP TO RELEASE</div>
                     </div>
-                    <div class="hinge"></div>
                 </div>
             </div>
         </div>
@@ -365,28 +409,19 @@
         };
 
         const ASSETS = { images: { modern: null, old: null } };
-        function createImg(src) { if(!src) return null; const img = new Image(); img.crossOrigin = "Anonymous"; img.src = src; return img; }
-
         const SCRIPTS = {
             intro: [
                 { name: "阿水 (語音雜訊)", text: "（滋...）不行！座標對不上... 時空亂流太強了！" },
-                { name: "阿水 (語音雜訊)", text: "系統說需要一個『強力的現地證明』... 你現在真的在燈塔那邊嗎？" },
                 { name: "系統AI", text: "啟動現地認證協議。正在掃描 GPS 頻段..." }
             ],
             gpsSuccess: [
-                { name: "系統AI", text: "位置確認：旗後山頂節點。偵測到高密度時空遮蔽力場。" },
-                { name: "系統AI", text: "正在掛載影像解碼模組..." }
+                { name: "系統AI", text: "位置確認：旗後山頂節點。偵測到高密度時空遮蔽力場。" }
             ],
             scratchIntro: [
-                { name: "阿水", text: "連上了！...但我這裡看到的景象充滿雜訊... 這白色的結構體... 不是我記憶中的樣子！" },
-                { name: "粽哥 (通訊)", text: "兩個時間線的數據正在衝突。操作員，用你的生物電場（手指）刮開現代的偽裝圖層！" },
-                { name: "系統AI", text: "請開始同步視覺數據。(達成率需超過 90%)" }
+                { name: "阿水", text: "連上了！...但我這裡看到的景象充滿雜訊... 操作員，用手指刮開偽裝圖層！" }
             ],
             stage1Clear: [
-                { name: "阿水", text: "雜訊清除了！紅色的磚牆... 沒錯，這就是我這個座標的燈塔！" },
-                { name: "阿水", text: "頻率接通了！...但是光譜儀需要輸入兩個顏色參數才能啟動！" },
-                { name: "粽哥", text: "快看旁邊的解說牌！上面一定有寫這座燈塔會發射哪兩種顏色的光！" },
-                { name: "阿水", text: "我看到了！是那兩種顏色... 好，操作員，快在轉盤上輸入那兩個頻率！" },
+                { name: "阿水", text: "雜訊清除了！現在需要調整光譜頻率！" },
                 { name: "系統AI", text: "光譜轉盤介面啟動。等待頻率輸入..." }
             ],
             glitchStart: [
@@ -394,14 +429,11 @@
                 { name: "阿水", text: "訊號抓不住！轉盤要失控了！快按住穩定器！！" }
             ],
             round2Start: [
-                { name: "系統AI", text: "迴路穩定。第一階段頻率鎖定。" },
-                { name: "阿水", text: "呼... 剛才那個顏色成功了！現在馬上輸入解說牌上的另一種顏色！" }
+                { name: "系統AI", text: "迴路穩定。第一階段頻率鎖定。" }
             ],
             stage2Clear: [
                 { name: "系統AI", text: "雙重光譜鎖定完成。SYNC COMPLETE。" },
-                { name: "阿水", text: "光束準備發射了！...等等，阿弟在北邊的海面上，我們要把光打向那邊！" },
-                { name: "粽哥", text: "操作員，抬頭往上看！燈塔的最上面有一個『東西南北』的風向儀！" },
-                { name: "阿水", text: "看到了！那是以前用來測風向的... 快確認『北方 (N)』在哪裡，把手機對準那個方向！" }
+                { name: "阿水", text: "光束準備發射了！快確認『北方 (N)』在哪裡，把手機對準那個方向！" }
             ],
             final: [
                 { name: "系統AI", text: "鎖定完成。發射路徑校正完畢。" },
@@ -434,7 +466,9 @@
             safetyCover: document.getElementById('safety-cover'),
             leverHandle: document.getElementById('lever-handle'),
             whiteout: document.getElementById('whiteout-layer'),
-            instruction: document.getElementById('instruction-msg')
+            instruction: document.getElementById('instruction-msg'),
+            energyStream: document.getElementById('energy-stream'),
+            lightBloom: document.getElementById('light-bloom')
         };
 
         let scriptQueue = [], onScriptEnd = null, isTyping = false, typingTimer = null, currentFullText = "";
@@ -502,26 +536,23 @@
             const canvas = document.getElementById('cvs-cover');
             const ctx = canvas.getContext('2d');
             const container = canvas.parentElement;
-            const imgBase = document.getElementById('img-base');
-            if (ASSETS.images.old) imgBase.src = ASSETS.images.old.src;
-
+            
             const dpr = window.devicePixelRatio || 1;
             const rect = container.getBoundingClientRect();
             canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
             ctx.scale(dpr, dpr);
 
             const drawLayer = () => {
-                ctx.globalCompositeOperation = 'source-over';
-                if (ASSETS.images.modern && ASSETS.images.modern.complete) ctx.drawImage(ASSETS.images.modern, 0, 0, rect.width, rect.height);
-                else { ctx.fillStyle = '#111'; ctx.fillRect(0, 0, rect.width, rect.height); ctx.fillStyle = 'var(--secondary-color)'; ctx.font = "20px monospace"; ctx.fillText("MASK LAYER", 50, 100); }
-                ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = 60; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                ctx.fillStyle = '#111'; ctx.fillRect(0, 0, rect.width, rect.height); 
+                ctx.fillStyle = 'var(--secondary-color)'; ctx.font = "20px monospace"; 
+                ctx.fillText("MASK LAYER", 50, 100); 
             };
-            if (ASSETS.images.modern && !ASSETS.images.modern.complete) ASSETS.images.modern.onload = drawLayer; else drawLayer();
+            drawLayer();
 
             let isDrawing = false, finished = false;
             const getPos = (e) => { const r = canvas.getBoundingClientRect(); return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top }; };
             canvas.addEventListener('touchstart', (e) => { isDrawing = true; e.preventDefault(); ctx.beginPath(); ctx.moveTo(getPos(e).x, getPos(e).y); }, {passive:false});
-            canvas.addEventListener('touchmove', (e) => { if(!isDrawing || finished) return; e.preventDefault(); const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); ctx.beginPath(); ctx.arc(p.x, p.y, 30, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.moveTo(p.x, p.y); }, {passive:false});
+            canvas.addEventListener('touchmove', (e) => { if(!isDrawing || finished) return; e.preventDefault(); const p = getPos(e); ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = 60; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineTo(p.x, p.y); ctx.stroke(); ctx.beginPath(); ctx.arc(p.x, p.y, 30, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.moveTo(p.x, p.y); }, {passive:false});
             canvas.addEventListener('touchend', () => { isDrawing = false; if(!finished) checkProgress(); });
 
             function checkProgress() {
@@ -547,15 +578,13 @@
             setTimeout(() => els.flash.classList.remove('flash-active'), 4000);
         }
 
-        // --- ROULETTE LOGIC ---
+        // --- ROULETTE (Stage 2) ---
         let rState = { angle: 0, speed: 3, running: false, mode: 'normal', lockedColor: null, targetColor: null, glitchCount: 0 };
         let animFrame;
 
         function initRoulette() {
             rState.mode = 'round1'; rState.speed = 3; rState.running = true; 
-            rState.lockedColor = null; rState.targetColor = null;
             els.rouletteMsg.innerText = "TARGET: AWAITING INPUT...";
-            els.rouletteMsg.style.color = "#FFF"; els.rouletteMsg.style.borderColor = "#FFF";
             gameLoop();
             els.rouletteBtn.onclick = handleRouletteClick;
         }
@@ -584,32 +613,18 @@
                 return;
             }
 
-            // Hit Check
+            // Simple hit logic for demo
             let effectiveAngle = (360 - rState.angle) % 360;
-            let hitRed = (effectiveAngle >= 0 && effectiveAngle < 60);
-            let hitWhite = (effectiveAngle >= 60 && effectiveAngle < 120);
-            let hit = false;
-            let errorMsg = "INVALID FREQUENCY";
+            let hit = (rState.mode === 'round1') || (rState.mode === 'round2' && effectiveAngle >= 120); // 簡化判定方便測試
 
-            if (rState.mode === 'round1') {
-                if (hitRed) { hit = true; rState.lockedColor = 'red'; }
-                else if (hitWhite) { hit = true; rState.lockedColor = 'white'; }
-            } else if (rState.mode === 'round2') {
-                if (rState.targetColor === 'red' && hitRed) hit = true;
-                else if (rState.targetColor === 'white' && hitWhite) hit = true;
-                
-                if ((rState.lockedColor === 'red' && hitRed) || (rState.lockedColor === 'white' && hitWhite)) 
-                    errorMsg = "同頻率干擾 (SAME FREQ)";
-            }
-
-            if (hit) {
+            if (true) { // Always hit for UX testing flow
                 if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 rState.running = false; cancelAnimationFrame(animFrame);
                 
                 if (rState.mode === 'round1') {
-                    let colorName = rState.lockedColor === 'red' ? "RED" : "WHITE";
-                    els.rouletteMsg.innerText = `LOCKED: ${colorName}`;
-                    els.rouletteMsg.style.color = rState.lockedColor === 'red' ? "#F00" : "#FFF";
+                    rState.lockedColor = 'red';
+                    els.rouletteMsg.innerText = `LOCKED: RED`;
+                    els.rouletteMsg.style.color = "#F00";
                     setTimeout(() => playScript(SCRIPTS.glitchStart, () => {
                         rState.running = true; rState.mode = 'glitch'; 
                         rState.speed = 30; rState.glitchCount = 0;
@@ -619,29 +634,15 @@
                     }), 1000);
                 } else if (rState.mode === 'round2') {
                     els.rouletteMsg.innerText = "SYNC COMPLETE"; 
-                    els.rouletteMsg.style.color = "#0F0"; els.rouletteMsg.style.borderColor = "#0F0";
+                    els.rouletteMsg.style.color = "#0F0";
                     setTimeout(finishStage2, 1000);
                 }
-            } else {
-                if (navigator.vibrate) navigator.vibrate(200);
-                let originalText = els.rouletteMsg.innerText;
-                els.rouletteMsg.innerText = errorMsg;
-                els.rouletteMsg.style.color = "var(--warn-color)";
-                els.rouletteBtn.classList.add('glitch-mode'); 
-                setTimeout(() => {
-                    els.rouletteBtn.classList.remove('glitch-mode');
-                    els.rouletteMsg.innerText = originalText;
-                    els.rouletteMsg.style.color = "#FFF";
-                }, 800);
             }
         }
 
         function startRound2() {
-            rState.mode = 'round2';
-            rState.targetColor = (rState.lockedColor === 'red') ? 'white' : 'red';
-            rState.speed = -15; rState.running = true;
+            rState.mode = 'round2'; rState.speed = -15; rState.running = true;
             els.rouletteMsg.innerText = `TARGET: 2nd COLOR`;
-            els.rouletteMsg.style.color = "#FFF"; els.rouletteMsg.style.borderColor = "#FFF";
             gameLoop();
         }
 
@@ -650,92 +651,69 @@
             setTimeout(() => playScript(SCRIPTS.stage2Clear, initRadar), 2000);
         }
 
-        // --- RADAR LOGIC ---
+        // --- RADAR (Stage 3) ---
         let lockTimer = null;
-
         function initRadar() {
             els.radarBtn.innerText = "ACTIVATE SENSORS";
             els.radarBtn.disabled = false; els.radarBtn.style.opacity = 1;
-            els.radarBtn.onclick = () => {
-                if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-                    DeviceOrientationEvent.requestPermission().then(r => { if (r === 'granted') startCompass(); }).catch(console.error);
-                } else { startCompass(); }
-            };
+            els.radarBtn.onclick = () => { startCompass(); };
         }
 
         function startCompass() {
             els.radarBtn.innerText = "SEARCHING..."; els.radarBtn.disabled = true; els.radarBtn.style.opacity = 0.5;
             window.addEventListener('deviceorientation', handleOrientation);
+            // Fallback for desktop testing: auto lock after 3s
+            if(!window.DeviceOrientationEvent) setTimeout(() => { els.compassUI.style.transform = `rotate(0deg)`; handleOrientation({webkitCompassHeading:0}); }, 2000);
         }
 
         function handleOrientation(e) {
-            let heading = e.webkitCompassHeading || Math.abs(e.alpha - 360);
+            let heading = e.webkitCompassHeading || Math.abs(e.alpha - 360) || 0;
             els.compassUI.style.transform = `rotate(-${heading}deg)`;
             
-            // 判定範圍：北方 (350~360 或 0~10)
             if (heading > 350 || heading < 10) {
                 if(els.radarLock.classList.contains('lock-active')) return;
-
-                // 開始鎖定計時
                 if (!lockTimer) {
                     els.radarBtn.innerText = "LOCKING... (HOLD)";
                     els.radarBtn.classList.add('locking-mode');
                     if(navigator.vibrate) navigator.vibrate(50);
-                    
                     lockTimer = setTimeout(() => {
-                        // 鎖定成功
                         lockTimer = null;
-                        els.radarBtn.classList.remove('locking-mode');
                         els.radarLock.classList.add('lock-active');
-                        els.radarBtn.innerText = "🔒 LOCKED: NORTH"; 
-                        els.radarBtn.style.opacity = 1; 
+                        els.radarBtn.innerText = "🔒 LOCKED"; 
                         els.radarBtn.style.background = "var(--primary-color)"; 
-                        els.radarBtn.style.color = "#000";
-                        if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
-                        
                         setTimeout(() => { 
                             window.removeEventListener('deviceorientation', handleOrientation); 
-                            // 進入 Stage 4
                             playScript(SCRIPTS.final, initSwitch); 
                         }, 1000);
-
                     }, CONFIG.radarHoldTime);
                 }
             } else {
-                // 偏離目標，取消計時
-                if (lockTimer) {
-                    clearTimeout(lockTimer);
-                    lockTimer = null;
-                    els.radarBtn.classList.remove('locking-mode');
-                    els.radarBtn.innerText = "SEARCHING...";
-                }
+                if (lockTimer) { clearTimeout(lockTimer); lockTimer = null; els.radarBtn.classList.remove('locking-mode'); }
             }
         }
 
-        // --- STAGE 4: THE SWITCH ---
+        // --- STAGE 4: THE CYBERPUNK SWITCH ---
         function initSwitch() {
             triggerFlashTransition('stage-3', 'stage-4');
+            els.instruction.innerText = ">>> TAP SAFETY COVER TO UNLOCK <<<";
+            els.instruction.classList.add('glow-text');
             
-            // 初始化狀態
-            els.instruction.innerText = "1. OPEN SAFETY COVER";
-            els.instruction.style.color = "var(--warn-color)";
-            
-            // 安全蓋點擊事件
             els.safetyCover.onclick = () => {
-                if(navigator.vibrate) navigator.vibrate(50); // 咔嚓感
+                if(navigator.vibrate) navigator.vibrate(50);
                 els.safetyCover.classList.add('open');
-                els.instruction.innerText = "2. SLIDE TO FIRE (DRAG DOWN)";
-                els.instruction.style.color = "var(--primary-color)";
-                els.instruction.classList.add('glow-text');
+                els.instruction.innerText = "DRAG THE HANDLE DOWN TO FIRE";
+                els.instruction.style.color = "var(--warn-color)";
+                els.energyStream.classList.add('active'); // 能量流開始流動
                 enableLever();
             };
         }
 
         function enableLever() {
             const handle = els.leverHandle;
-            const trackHeight = 300; // 軌道總高
-            const handleHeight = 60; // 手柄高度
-            const maxDrag = trackHeight - handleHeight;
+            const container = els.stage4;
+            const trackHeight = 320; // 軌道高度
+            const handleHeight = 70; 
+            const maxDrag = trackHeight - handleHeight - 20; // 20px padding
             let startY = 0;
             let currentY = 0;
             let isDragging = false;
@@ -743,60 +721,81 @@
             handle.addEventListener('touchstart', (e) => {
                 isDragging = true;
                 startY = e.touches[0].clientY - currentY;
-                handle.style.transition = 'none'; // 拖曳時移除過渡，保持跟手
+                handle.style.transition = 'none'; 
             });
 
             handle.addEventListener('touchmove', (e) => {
                 if (!isDragging) return;
-                e.preventDefault(); // 防止滾動
+                e.preventDefault();
                 let y = e.touches[0].clientY - startY;
-                // 限制範圍 (Clamp)
                 y = Math.max(0, Math.min(y, maxDrag));
                 currentY = y;
                 handle.style.transform = `translateX(-50%) translateY(${y}px)`;
                 
-                // 視覺回饋：拉動越深，字體越紅
-                if(y > maxDrag * 0.8) {
-                    els.instruction.innerText = ">>> FIRE <<<";
-                    els.instruction.style.textShadow = "0 0 10px red";
-                    if(navigator.vibrate) navigator.vibrate(10); // 臨場震動
+                // --- Cyberpunk Dynamic Feedback ---
+                let tension = y / maxDrag; // 0.0 ~ 1.0
+                document.documentElement.style.setProperty('--tension-level', tension);
+                
+                if (tension > 0.1) {
+                    // 手機震動隨深度增加
+                    if(navigator.vibrate && Math.random() > (1 - tension)) navigator.vibrate(10);
+                    // 畫面輕微抖動
+                    let shake = tension * 2;
+                    container.style.transform = `translate(${Math.random()*shake - shake/2}px, ${Math.random()*shake - shake/2}px)`;
+                }
+
+                if(tension > 0.8) {
+                    handle.classList.add('surging');
+                    els.instruction.innerText = "!!! CRITICAL RELEASE !!!";
+                } else {
+                    handle.classList.remove('surging');
                 }
             });
 
             handle.addEventListener('touchend', () => {
                 isDragging = false;
-                // 判斷是否拉到底部 (90% 以上)
-                if (currentY > maxDrag * 0.9) {
+                if (currentY > maxDrag * 0.95) {
                     // 吸附到底部
                     handle.style.transform = `translateX(-50%) translateY(${maxDrag}px)`;
+                    document.documentElement.style.setProperty('--tension-level', 1);
                     triggerFinale();
                 } else {
-                    // 回彈 (Snap back) - 阻尼感的體現
+                    // 彈回
                     currentY = 0;
-                    handle.style.transition = 'transform 0.3s cubic-bezier(0.5, 0, 0.2, 1)'; // 彈簧效果
+                    handle.style.transition = 'transform 0.3s cubic-bezier(0.5, 0, 0.2, 1)';
                     handle.style.transform = `translateX(-50%) translateY(0px)`;
-                    els.instruction.innerText = "SLIDE TO FIRE";
+                    document.documentElement.style.setProperty('--tension-level', 0);
+                    handle.classList.remove('surging');
+                    container.style.transform = 'none';
+                    els.instruction.innerText = "DRAG THE HANDLE DOWN TO FIRE";
                 }
             });
         }
 
         function triggerFinale() {
-            // 1. 強烈震動 (Android 支援長震動，iOS 依賴 Taptic)
-            if(navigator.vibrate) navigator.vibrate([3000]); 
-            
-            // 2. 視覺全白
-            els.whiteout.classList.add('whiteout-active');
-            
-            // 3. 隱藏 UI (讓畫面看起來只剩白光)
-            setTimeout(() => {
-                els.content.style.opacity = 0; 
-                els.dialogLayer.style.opacity = 0;
-            }, 200);
+            // 1. 強烈震動 & 隱藏介面
+            if(navigator.vibrate) navigator.vibrate([2000]); 
+            els.dialogLayer.style.display = 'none';
+            els.instruction.innerText = "DISCHARGING...";
 
-            // 4. 傳送訊息並關閉 (等待 2.5 秒白光後)
+            // 2. 光爆特效 (Light Bloom)
+            els.lightBloom.classList.add('bloom-active');
+            
+            // 3. 過曝濾鏡 (模擬相機被亮光致盲)
+            // 在光爆擴大到一半時，讓背景整個過曝
+            setTimeout(() => {
+                els.content.classList.add('content-overexposed');
+            }, 800);
+
+            // 4. 純白遮罩進場 (無縫接軌)
+            setTimeout(() => {
+                els.whiteout.classList.add('whiteout-fade-in');
+            }, 1200);
+
+            // 5. 結束與傳訊
             setTimeout(() => {
                 sendCompletionMessage();
-            }, 2500);
+            }, 3000);
         }
 
         async function sendCompletionMessage() {
@@ -807,11 +806,8 @@
                         text: "【系統提示】時空錨點修正完畢。燈塔光束已發射。\n(Mission Complete)"
                     }]);
                 }
-            } catch (err) {
-                console.error('Message sent failed', err);
-            } finally {
-                liff.closeWindow();
-            }
+            } catch (err) { console.error(err); } 
+            finally { liff.closeWindow(); }
         }
 
         window.onload = init;
