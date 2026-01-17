@@ -67,7 +67,6 @@
             box-shadow: 0 0 20px var(--warn-color);
             animation: shake 0.2s infinite;
         }
-        /* 鎖定中的黃色狀態 */
         .cyber-btn.locking-mode {
             color: #000; background: #ffff00; border-color: #ffff00;
             box-shadow: 0 0 20px #ffff00;
@@ -154,6 +153,89 @@
         }
         .lock-active { border-color: var(--primary-color); border-width: 5px; box-shadow: 0 0 20px var(--primary-color); }
 
+        /* STAGE 4: Final Switch */
+        .switch-container {
+            position: relative; width: 260px; height: 400px;
+            background: #111; border: 4px solid #333;
+            border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            overflow: hidden; perspective: 1000px; margin-top: 20px;
+        }
+
+        .hazard-stripes {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                -45deg,
+                #f2c12e, #f2c12e 20px,
+                #1a1a1a 20px, #1a1a1a 40px
+            );
+            opacity: 0.8; z-index: 1;
+        }
+
+        .lever-track {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px; height: 300px;
+            background: #000; border: 2px solid #555;
+            border-radius: 5px; z-index: 2;
+            box-shadow: inset 0 0 10px #000;
+        }
+
+        .track-groove {
+            position: absolute; left: 50%; top: 10px; bottom: 10px;
+            width: 10px; background: #222; transform: translateX(-50%);
+            border-radius: 5px; box-shadow: inset 0 0 5px #000;
+        }
+
+        .lever-handle {
+            position: absolute; top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 100px; height: 60px;
+            background: linear-gradient(to bottom, #cc0000, #990000);
+            border: 2px solid #ff3333; border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            cursor: grab; z-index: 5; touch-action: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .handle-grip {
+            color: rgba(0,0,0,0.5); font-weight: bold; letter-spacing: 2px; font-family: sans-serif;
+            transform: rotate(90deg);
+        }
+
+        .safety-cover {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10; transform-origin: top center;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto; cursor: pointer;
+        }
+
+        .cover-glass {
+            width: 100%; height: 100%;
+            background: rgba(200, 255, 255, 0.15); /* 玻璃質感 */
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(2px);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .cover-text {
+            border: 2px solid var(--warn-color); padding: 5px 15px;
+            color: var(--warn-color); font-family: var(--tech-font);
+            font-weight: bold; transform: rotate(-30deg);
+            text-shadow: 0 0 5px rgba(0,0,0,0.8); background: rgba(0,0,0,0.6);
+        }
+
+        .safety-cover.open {
+            transform: rotateX(100deg); opacity: 0.5; pointer-events: none;
+        }
+
+        /* Whiteout Effect */
+        #whiteout-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 10000; opacity: 0; pointer-events: none;
+        }
+        .whiteout-active { animation: whiteoutAnim 3s forwards; }
+
         /* Dialog System */
         #dialog-layer {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9995;
@@ -181,6 +263,7 @@
         @keyframes shake { 0% { transform: translate(2px, 2px) rotate(0deg); } 25% { transform: translate(-2px, -2px) rotate(-2deg); } 50% { transform: translate(-2px, 2px) rotate(2deg); } 75% { transform: translate(2px, -2px) rotate(-1deg); } 100% { transform: translate(0, 0) rotate(0); } }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
         @keyframes flashPlateau { 0% { opacity: 0; } 20% { opacity: 1; } 60% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes whiteoutAnim { 0% { opacity: 0; } 5% { opacity: 1; } 20% { opacity: 1; } 100% { opacity: 1; background: #fff; } }
     </style>
 </head>
 <body>
@@ -191,6 +274,7 @@
     </div>
 
     <div id="flash-overlay"></div>
+    <div id="whiteout-layer"></div>
 
     <div id="content-layer">
         
@@ -235,6 +319,30 @@
             </div>
             <button id="radar-btn" class="cyber-btn" disabled style="opacity: 0.5;">SEARCHING...</button>
         </div>
+
+        <div id="stage-4" class="stage-box hidden">
+            <h2 class="glow-text" style="color:var(--warn-color);">FINAL SEQUENCE</h2>
+            <div id="instruction-msg" class="glow-text" style="margin-bottom: 20px;">WAITING FOR AUTHORIZATION...</div>
+            
+            <div class="switch-container">
+                <div class="hazard-stripes"></div>
+                
+                <div class="lever-track">
+                    <div class="track-groove"></div>
+                    <div id="lever-handle" class="lever-handle">
+                        <div class="handle-grip">|||</div>
+                    </div>
+                </div>
+
+                <div id="safety-cover" class="safety-cover">
+                    <div class="cover-glass">
+                        <div class="glass-reflection"></div>
+                        <span class="cover-text">SAFETY LOCK</span>
+                    </div>
+                    <div class="hinge"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="dialog-layer" class="hidden">
@@ -247,13 +355,13 @@
 
     <script>
         const CONFIG = {
-            liffId: "2008882930-UEAr0VU4", 
+            liffId: "2008882930-UEAr0VU4", // ★ 請替換為您的 LIFF ID
             devMode: true,
             targetGPS: { lat: 22.615556, lng: 120.265833 }, 
             gpsRadius: 1000000, 
             scratchThreshold: 90,
             glitchClicksReq: 15,
-            radarHoldTime: 2000 // 需要穩定 2 秒
+            radarHoldTime: 2000
         };
 
         const ASSETS = { images: { modern: null, old: null } };
@@ -296,9 +404,9 @@
                 { name: "阿水", text: "看到了！那是以前用來測風向的... 快確認『北方 (N)』在哪裡，把手機對準那個方向！" }
             ],
             final: [
-                { name: "系統AI", text: "目標鎖定。信號發射中..." },
-                { name: "阿水", text: "打中了！紅白光照亮海面了！阿弟看到光了！" },
-                { name: "結局", text: "恭喜完成體驗版。 (END)" }
+                { name: "系統AI", text: "鎖定完成。發射路徑校正完畢。" },
+                { name: "粽哥", text: "好，就是現在！總開關的安全蓋已經解鎖了！" },
+                { name: "阿水", text: "操作員，打開蓋子，把那個閘刀用力拉到底！讓光束射出去！" }
             ]
         };
 
@@ -320,7 +428,13 @@
             rouletteMsg: document.getElementById('roulette-msg'),
             compassUI: document.getElementById('compass-ui'),
             radarLock: document.getElementById('radar-lock-ring'),
-            radarBtn: document.getElementById('radar-btn')
+            radarBtn: document.getElementById('radar-btn'),
+            // Stage 4 Elements
+            stage4: document.getElementById('stage-4'),
+            safetyCover: document.getElementById('safety-cover'),
+            leverHandle: document.getElementById('lever-handle'),
+            whiteout: document.getElementById('whiteout-layer'),
+            instruction: document.getElementById('instruction-msg')
         };
 
         let scriptQueue = [], onScriptEnd = null, isTyping = false, typingTimer = null, currentFullText = "";
@@ -536,7 +650,7 @@
             setTimeout(() => playScript(SCRIPTS.stage2Clear, initRadar), 2000);
         }
 
-        // Radar Logic with Hold Timer
+        // --- RADAR LOGIC ---
         let lockTimer = null;
 
         function initRadar() {
@@ -565,7 +679,7 @@
                 // 開始鎖定計時
                 if (!lockTimer) {
                     els.radarBtn.innerText = "LOCKING... (HOLD)";
-                    els.radarBtn.classList.add('locking-mode'); // 變黃色
+                    els.radarBtn.classList.add('locking-mode');
                     if(navigator.vibrate) navigator.vibrate(50);
                     
                     lockTimer = setTimeout(() => {
@@ -578,10 +692,13 @@
                         els.radarBtn.style.background = "var(--primary-color)"; 
                         els.radarBtn.style.color = "#000";
                         if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                        
                         setTimeout(() => { 
                             window.removeEventListener('deviceorientation', handleOrientation); 
-                            playScript(SCRIPTS.final); 
+                            // 進入 Stage 4
+                            playScript(SCRIPTS.final, initSwitch); 
                         }, 1000);
+
                     }, CONFIG.radarHoldTime);
                 }
             } else {
@@ -592,6 +709,108 @@
                     els.radarBtn.classList.remove('locking-mode');
                     els.radarBtn.innerText = "SEARCHING...";
                 }
+            }
+        }
+
+        // --- STAGE 4: THE SWITCH ---
+        function initSwitch() {
+            triggerFlashTransition('stage-3', 'stage-4');
+            
+            // 初始化狀態
+            els.instruction.innerText = "1. OPEN SAFETY COVER";
+            els.instruction.style.color = "var(--warn-color)";
+            
+            // 安全蓋點擊事件
+            els.safetyCover.onclick = () => {
+                if(navigator.vibrate) navigator.vibrate(50); // 咔嚓感
+                els.safetyCover.classList.add('open');
+                els.instruction.innerText = "2. SLIDE TO FIRE (DRAG DOWN)";
+                els.instruction.style.color = "var(--primary-color)";
+                els.instruction.classList.add('glow-text');
+                enableLever();
+            };
+        }
+
+        function enableLever() {
+            const handle = els.leverHandle;
+            const trackHeight = 300; // 軌道總高
+            const handleHeight = 60; // 手柄高度
+            const maxDrag = trackHeight - handleHeight;
+            let startY = 0;
+            let currentY = 0;
+            let isDragging = false;
+
+            handle.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startY = e.touches[0].clientY - currentY;
+                handle.style.transition = 'none'; // 拖曳時移除過渡，保持跟手
+            });
+
+            handle.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault(); // 防止滾動
+                let y = e.touches[0].clientY - startY;
+                // 限制範圍 (Clamp)
+                y = Math.max(0, Math.min(y, maxDrag));
+                currentY = y;
+                handle.style.transform = `translateX(-50%) translateY(${y}px)`;
+                
+                // 視覺回饋：拉動越深，字體越紅
+                if(y > maxDrag * 0.8) {
+                    els.instruction.innerText = ">>> FIRE <<<";
+                    els.instruction.style.textShadow = "0 0 10px red";
+                    if(navigator.vibrate) navigator.vibrate(10); // 臨場震動
+                }
+            });
+
+            handle.addEventListener('touchend', () => {
+                isDragging = false;
+                // 判斷是否拉到底部 (90% 以上)
+                if (currentY > maxDrag * 0.9) {
+                    // 吸附到底部
+                    handle.style.transform = `translateX(-50%) translateY(${maxDrag}px)`;
+                    triggerFinale();
+                } else {
+                    // 回彈 (Snap back) - 阻尼感的體現
+                    currentY = 0;
+                    handle.style.transition = 'transform 0.3s cubic-bezier(0.5, 0, 0.2, 1)'; // 彈簧效果
+                    handle.style.transform = `translateX(-50%) translateY(0px)`;
+                    els.instruction.innerText = "SLIDE TO FIRE";
+                }
+            });
+        }
+
+        function triggerFinale() {
+            // 1. 強烈震動 (Android 支援長震動，iOS 依賴 Taptic)
+            if(navigator.vibrate) navigator.vibrate([3000]); 
+            
+            // 2. 視覺全白
+            els.whiteout.classList.add('whiteout-active');
+            
+            // 3. 隱藏 UI (讓畫面看起來只剩白光)
+            setTimeout(() => {
+                els.content.style.opacity = 0; 
+                els.dialogLayer.style.opacity = 0;
+            }, 200);
+
+            // 4. 傳送訊息並關閉 (等待 2.5 秒白光後)
+            setTimeout(() => {
+                sendCompletionMessage();
+            }, 2500);
+        }
+
+        async function sendCompletionMessage() {
+            try {
+                if (liff.isLoggedIn()) {
+                    await liff.sendMessages([{
+                        type: 'text',
+                        text: "【系統提示】時空錨點修正完畢。燈塔光束已發射。\n(Mission Complete)"
+                    }]);
+                }
+            } catch (err) {
+                console.error('Message sent failed', err);
+            } finally {
+                liff.closeWindow();
             }
         }
 
