@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>乾卦・破曉之光 | FINAL INTEGRATED</title>
+    <title>乾卦・破曉之光 | FINAL REFINED</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=VT323&display=swap" rel="stylesheet">
 
@@ -35,7 +35,7 @@
             background-size: 20px 20px;
         }
 
-        /* CRT Scanline Effects */
+        /* CRT Effects */
         body::after {
             content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
@@ -59,36 +59,25 @@
             clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
             cursor: pointer; position: relative; overflow: hidden;
-            transition: all 0.2s;
-            text-transform: uppercase;
+            transition: all 0.1s; text-transform: uppercase;
         }
-        .cyber-btn:active { background: var(--secondary-color); color: #000; transform: scale(0.95); }
+        .cyber-btn:active { background: var(--secondary-color); color: #000; transform: scale(0.98); }
         .cyber-btn.glitch-mode {
-            color: var(--warn-color); border-color: var(--warn-color);
-            box-shadow: 0 0 15px var(--warn-color);
-            animation: shake 0.5s infinite;
+            color: #FFF; background: var(--warn-color); border-color: #FFF;
+            box-shadow: 0 0 20px var(--warn-color);
+            animation: shake 0.2s infinite;
         }
 
-        /* Content Layer - 修正居中問題 */
+        /* Layout */
         #content-layer { width: 100%; height: 100%; transition: filter 0.5s ease; }
         .content-dimmed { filter: brightness(0.2) blur(3px) grayscale(50%); }
-        
         .stage-box { 
-            width: 100%; height: 100%; 
-            display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; /* 改回 Center */
-            text-align: center; 
-            padding-bottom: 20vh; /* 預留底部對話框空間 */
+            width: 100%; height: 100%; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; text-align: center; 
+            padding-bottom: 20vh;
         }
 
-        /* Loading Screen - 修正居中 */
-        #loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
-        }
-
-        /* STAGE 1: Scratch */
+        /* STAGE 1 */
         .scratch-container {
             width: 85vw; height: 60vw; max-width: 500px; max-height: 350px;
             position: relative; margin: 20px auto;
@@ -96,27 +85,24 @@
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
             background: #000;
         }
-        #scratch-progress {
-            font-family: var(--tech-font); color: var(--secondary-color); 
-            margin-top: 10px; font-size: 1.2rem;
-        }
+        #scratch-progress { font-family: var(--tech-font); color: var(--secondary-color); margin-top: 10px; font-size: 1.2rem; }
 
         /* STAGE 2: Roulette */
         .roulette-container {
             position: relative; width: 280px; height: 280px; margin: 30px auto;
             border-radius: 50%; border: 4px solid #333;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
-            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.1); overflow: hidden;
         }
         #color-wheel {
             width: 100%; height: 100%; border-radius: 50%;
+            /* 紅(0-60) / 白(60-120) / 綠 / 藍 / 黑 / 灰 */
             background: conic-gradient(
-                #FF0000 0deg 60deg,    /* 紅 (1883) */
-                #FFFFFF 60deg 120deg,  /* 白 (1918) */
-                #00FF00 120deg 180deg, /* 綠 */
-                #0000FF 180deg 240deg, /* 藍 */
-                #111111 240deg 300deg, /* 黑 */
-                #555555 300deg 360deg  /* 雜訊 */
+                #FF0000 0deg 60deg, 
+                #FFFFFF 60deg 120deg,
+                #00FF00 120deg 180deg, 
+                #0000FF 180deg 240deg, 
+                #111111 240deg 300deg, 
+                #555555 300deg 360deg
             );
             position: relative;
         }
@@ -141,15 +127,9 @@
         .radar-container {
             position: relative; width: 300px; height: 300px; margin: 30px auto;
             border-radius: 50%;
-            background: 
-                radial-gradient(transparent 30%, rgba(0, 255, 0, 0.2) 31%, transparent 32%),
-                radial-gradient(transparent 60%, rgba(0, 255, 0, 0.2) 61%, transparent 62%),
-                linear-gradient(0deg, transparent 49.5%, rgba(0, 255, 0, 0.5) 50%, transparent 50.5%),
-                linear-gradient(90deg, transparent 49.5%, rgba(0, 255, 0, 0.5) 50%, transparent 50.5%);
-            background-color: rgba(0, 20, 0, 0.3);
+            background: radial-gradient(transparent 60%, rgba(0, 255, 0, 0.2) 61%), rgba(0, 20, 0, 0.3);
             border: 2px solid var(--primary-color);
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2), inset 0 0 30px rgba(0, 255, 0, 0.2);
-            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2); overflow: hidden;
         }
         .radar-scan {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%;
@@ -171,10 +151,8 @@
 
         /* Dialog System */
         #dialog-layer {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 9995;
-            display: flex; flex-direction: column; justify-content: flex-end;
-            padding-bottom: env(safe-area-inset-bottom, 20px);
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9995;
+            display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: env(safe-area-inset-bottom, 20px);
         }
         #dialog-box {
             position: relative; width: 94%; margin: 0 auto 20px auto;
@@ -184,30 +162,23 @@
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
         }
         .speaker { 
-            font-family: var(--tech-font); font-size: 0.9rem; 
-            padding: 4px 10px; margin-bottom: 10px; display: inline-block;
-            background: var(--secondary-color); color: #000; font-weight: bold;
-            box-shadow: 0 0 10px var(--secondary-color);
+            font-family: var(--tech-font); font-size: 0.9rem; padding: 4px 10px; margin-bottom: 10px; 
+            display: inline-block; background: var(--secondary-color); color: #000; font-weight: bold;
         }
         .dialog-text { font-size: 1.2rem; color: #e0ffe0; min-height: 3.6rem; text-shadow: 0 0 2px rgba(0, 255, 0, 0.5); white-space: pre-wrap; line-height: 1.4; }
         .next-arrow { position: absolute; bottom: 10px; right: 15px; font-size: 1.5rem; color: var(--secondary-color); animation: bounce 1s infinite; }
-
-        @keyframes radar-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
-        @keyframes flashPlateau { 0% { opacity: 0; } 20% { opacity: 1; } 60% { opacity: 1; } 100% { opacity: 0; } }
         
-        #flash-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; opacity: 0; pointer-events: none; z-index: 9999;
-            mix-blend-mode: hard-light;
-        }
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+        #flash-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; opacity: 0; pointer-events: none; z-index: 9999; mix-blend-mode: hard-light; }
         .flash-active { animation: flashPlateau 4s forwards; }
 
+        @keyframes radar-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes shake { 0% { transform: translate(2px, 2px) rotate(0deg); } 25% { transform: translate(-2px, -2px) rotate(-2deg); } 50% { transform: translate(-2px, 2px) rotate(2deg); } 75% { transform: translate(2px, -2px) rotate(-1deg); } 100% { transform: translate(0, 0) rotate(0); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+        @keyframes flashPlateau { 0% { opacity: 0; } 20% { opacity: 1; } 60% { opacity: 1; } 100% { opacity: 0; } }
     </style>
 </head>
 <body>
-
     <div id="loading-screen">
         <div class="glow-text" style="font-size: 1.5rem; animation: shake 2s infinite;">SYSTEM INITIALIZING</div>
         <div id="status-log" style="color: var(--secondary-color); margin-top:10px;">LOADING MODULES...</div>
@@ -225,7 +196,6 @@
                 <div id="gps-msg" class="glow-text" style="color: var(--accent-color);">WAITING FOR SIGNAL...</div>
                 <button id="gps-retry-btn" class="cyber-btn hidden">RE-SCAN</button>
             </div>
-            
             <div id="scratch-area" class="hidden" style="opacity: 0; transition: opacity 1s;">
                 <div class="scratch-container">
                     <img id="img-base" style="width:100%; height:100%; object-fit:cover; filter: sepia(1) hue-rotate(180deg) contrast(1.2);" />
@@ -237,20 +207,17 @@
 
         <div id="stage-2" class="stage-box hidden">
             <h2 class="glow-text">光譜頻率調校</h2>
-            <div id="roulette-msg" class="target-display">TARGET: 1883 (RED)</div>
-            
+            <div id="roulette-msg" class="target-display">TARGET: 紅白任一 (ANY)</div>
             <div class="roulette-container">
                 <div class="pointer"></div>
                 <div id="color-wheel"></div>
             </div>
-
             <button id="roulette-btn" class="cyber-btn">⚡ LOCK FREQUENCY</button>
         </div>
 
         <div id="stage-3" class="stage-box hidden">
             <h2 class="glow-text">終端雷達鎖定</h2>
             <p style="color: var(--secondary-color);">TARGET: NORTH (北方)</p>
-            
             <div class="radar-container">
                 <div class="radar-scan"></div>
                 <div class="lock-indicator" id="radar-lock-ring"></div>
@@ -261,10 +228,8 @@
                     <div style="position:absolute; left:50%; top:10%; height:80%; width:1px; background:rgba(0,255,0,0.3);"></div>
                 </div>
             </div>
-
             <button id="radar-btn" class="cyber-btn" disabled style="opacity: 0.5;">SEARCHING...</button>
         </div>
-
     </div>
 
     <div id="dialog-layer" class="hidden">
@@ -276,29 +241,21 @@
     </div>
 
     <script>
-        // CONFIG
         const CONFIG = {
             liffId: "2008882930-UEAr0VU4", 
             devMode: true,
             targetGPS: { lat: 22.615556, lng: 120.265833 }, 
             gpsRadius: 1000000, 
-            scratchThreshold: 90 // 用戶要求 90%
+            scratchThreshold: 90,
+            glitchClicksReq: 15 // 增加連點需求
         };
 
-        // ASSETS (記得填入你的 Base64 或圖片 URL)
-        const ASSETS = { 
-            images: { 
-                modern: null, // 遮罩層 (現代)
-                old: null     // 底層 (舊時代)
-            } 
-        };
-        
+        const ASSETS = { images: { modern: null, old: null } };
         function createImg(src) { if(!src) return null; const img = new Image(); img.crossOrigin = "Anonymous"; img.src = src; return img; }
 
-        // SCRIPTS - 恢復經典版劇情，並融合新玩法
         const SCRIPTS = {
             intro: [
-                { name: "阿水 (語音雜訊)", text: "（滋...滋...）不行！座標對不上... 時空亂流太強了！" },
+                { name: "阿水 (語音雜訊)", text: "（滋...）不行！座標對不上... 時空亂流太強了！" },
                 { name: "阿水 (語音雜訊)", text: "系統說需要一個『強力的現地證明』... 你現在真的在燈塔那邊嗎？" },
                 { name: "系統AI", text: "啟動現地認證協議。正在掃描 GPS 頻段..." }
             ],
@@ -309,30 +266,31 @@
             scratchIntro: [
                 { name: "阿水", text: "連上了！...但我這裡看到的景象充滿雜訊... 這白色的結構體... 不是我記憶中的樣子！" },
                 { name: "粽哥 (通訊)", text: "兩個時間線的數據正在衝突。操作員，用你的生物電場（手指）刮開現代的偽裝圖層！" },
-                { name: "系統AI", text: "請開始同步視覺數據。 (達成率需超過 90%)" }
+                { name: "系統AI", text: "請開始同步視覺數據。(達成率需超過 90%)" }
             ],
             stage1Clear: [
                 { name: "阿水", text: "雜訊清除了！紅色的磚牆... 沒錯，這就是我這個座標的燈塔！" },
-                { name: "阿水", text: "錨點同步完成！頻率接通了！...但我不知道要打什麼顏色的光！" },
-                { name: "粽哥", text: "快看解說牌！1883 年跟 1918 年的燈塔分別是用什麼顏色的材料蓋的？我們就打那兩個顏色的光！" },
-                { name: "系統AI", text: "光譜轉盤介面啟動。準備輸入參數：Target 1883。" }
+                { name: "阿水", text: "頻率接通了！但我不知道要打什麼顏色的光！" },
+                { name: "阿水", text: "解說牌上說這座燈塔有過『紅磚』跟『白牆』兩種時期，但沒標註哪年是哪種顏色..." },
+                { name: "粽哥", text: "管他的！系統顯示兩種光譜反應都很強，我們兩個顏色都打打看！" },
+                { name: "系統AI", text: "光譜轉盤介面啟動。請任意鎖定紅色 (RED) 或白色 (WHITE) 頻率。" }
             ],
             glitchStart: [
-                { name: "系統警報", text: "⚠️ 警告：時空奇異點接近！訊號失控！" },
-                { name: "阿水", text: "抓不住訊號！轉盤瘋掉了！快幫我穩住它！！" }
+                { name: "系統警報", text: "⚠️ 警告：時空奇異點接近！迴路超載！" },
+                { name: "阿水", text: "訊號抓不住！轉盤要失控了！快按住穩定器！！" }
             ],
             round2Start: [
-                { name: "系統AI", text: "訊號已穩定。進入第二階段校準。" },
-                { name: "阿水", text: "呼... 嚇死我了。下一個是 1918 年！那是改建成白色的時候！" }
+                { name: "系統AI", text: "迴路穩定。第一階段光譜測試完成。" },
+                { name: "阿水", text: "呼... 手差點斷掉。好！剛才那個顏色成功了！現在馬上切換到另一種顏色！" }
             ],
             stage2Clear: [
-                { name: "系統AI", text: "光譜鎖定完成。SYNC COMPLETE。" },
+                { name: "系統AI", text: "雙重光譜鎖定完成。SYNC COMPLETE。" },
                 { name: "阿水", text: "光打出去了！...我看見阿弟了！他往北邊的海面跑了！" },
                 { name: "阿水", text: "快把雷達對準北方 (N)！我們不能跟丟！" }
             ],
             final: [
                 { name: "系統AI", text: "目標鎖定。傳送坐標數據..." },
-                { name: "結局", text: "恭喜完成。體驗版結束。(請關注後續關卡)" }
+                { name: "結局", text: "恭喜完成體驗版。 (END)" }
             ]
         };
 
@@ -347,13 +305,9 @@
             speaker: document.getElementById('speaker-name'),
             text: document.getElementById('dialog-text-container'),
             arrow: document.getElementById('next-arrow'),
-            
-            // Stages
             stage1: document.getElementById('stage-1'),
             stage2: document.getElementById('stage-2'),
             stage3: document.getElementById('stage-3'),
-
-            // Game Logic Refs
             wheel: document.getElementById('color-wheel'),
             rouletteBtn: document.getElementById('roulette-btn'),
             rouletteMsg: document.getElementById('roulette-msg'),
@@ -362,26 +316,16 @@
             radarBtn: document.getElementById('radar-btn')
         };
 
-        // CORE SYSTEM
-        let scriptQueue = [];
-        let onScriptEnd = null;
-        let isTyping = false;
-        let typingTimer = null;
-        let currentFullText = "";
+        let scriptQueue = [], onScriptEnd = null, isTyping = false, typingTimer = null, currentFullText = "";
 
         async function init() {
             try {
                 await liff.init({ liffId: CONFIG.liffId });
-                // 這裡載入圖片 (Placeholder for now)
-                // ASSETS.images.modern = createImg("YOUR_MODERN_IMG_URL");
-                // ASSETS.images.old = createImg("YOUR_OLD_IMG_URL");
-                
+                // ASSETS.images.modern = createImg("YOUR_IMG");
                 if (!liff.isLoggedIn()) { liff.login(); return; }
                 els.startBtn.classList.remove('hidden');
                 document.getElementById('status-log').innerText = "SYSTEM READY";
-            } catch (e) {
-                if(CONFIG.devMode) els.startBtn.classList.remove('hidden');
-            }
+            } catch (e) { if(CONFIG.devMode) els.startBtn.classList.remove('hidden'); }
         }
         
         els.startBtn.onclick = () => {
@@ -391,45 +335,30 @@
         };
 
         function playScript(script, callback) {
-            scriptQueue = [...script];
-            onScriptEnd = callback;
-            els.dialogLayer.classList.remove('hidden');
-            els.content.classList.add('content-dimmed');
+            scriptQueue = [...script]; onScriptEnd = callback;
+            els.dialogLayer.classList.remove('hidden'); els.content.classList.add('content-dimmed');
             nextDialog();
         }
 
         function nextDialog() {
             if (scriptQueue.length === 0) {
-                els.dialogLayer.classList.add('hidden');
-                els.content.classList.remove('content-dimmed');
-                if (onScriptEnd) onScriptEnd();
-                return;
+                els.dialogLayer.classList.add('hidden'); els.content.classList.remove('content-dimmed');
+                if (onScriptEnd) onScriptEnd(); return;
             }
             const line = scriptQueue.shift();
-            els.speaker.innerText = line.name;
-            currentFullText = line.text;
+            els.speaker.innerText = line.name; currentFullText = line.text;
             
-            if(line.name.includes("阿水")) {
-                els.speaker.style.backgroundColor = "var(--primary-color)"; 
-                els.speaker.style.color = "#000";
-            } else if(line.name.includes("警報")) {
-                els.speaker.style.backgroundColor = "var(--warn-color)";
-                els.speaker.style.color = "#FFF";
-            } else { // 系統
-                els.speaker.style.backgroundColor = "var(--secondary-color)";
-                els.speaker.style.color = "#000";
-            }
-
+            if(line.name.includes("阿水")) { els.speaker.style.background="var(--primary-color)"; els.speaker.style.color="#000"; }
+            else if(line.name.includes("警報")) { els.speaker.style.background="var(--warn-color)"; els.speaker.style.color="#FFF"; }
+            else { els.speaker.style.background="var(--secondary-color)"; els.speaker.style.color="#000"; }
             startTyping(currentFullText);
         }
 
         function startTyping(txt) {
             isTyping = true; els.text.innerHTML = ""; els.arrow.classList.add('hidden');
-            let i = 0;
-            clearInterval(typingTimer);
+            let i = 0; clearInterval(typingTimer);
             typingTimer = setInterval(() => {
-                els.text.innerText = txt.substring(0, i+1);
-                i++;
+                els.text.innerText = txt.substring(0, i+1); i++;
                 if(i >= txt.length) { clearInterval(typingTimer); isTyping = false; els.arrow.classList.remove('hidden'); }
             }, 30);
         }
@@ -439,18 +368,12 @@
             else { nextDialog(); }
         };
 
-        // GPS Logic
         function checkGPS() {
-            // Simplified success for demo
             const msg = document.getElementById('gps-msg');
-            msg.innerText = "COORDINATES ACQUIRED";
-            msg.style.color = "var(--primary-color)";
-            setTimeout(() => {
-                playScript(SCRIPTS.gpsSuccess, initScratch);
-            }, 1000);
+            msg.innerText = "COORDINATES ACQUIRED"; msg.style.color = "var(--primary-color)";
+            setTimeout(() => playScript(SCRIPTS.gpsSuccess, initScratch), 1000);
         }
 
-        // Scratch Logic (Fixed Threshold & DPI)
         function initScratch() {
             document.getElementById('gps-area').classList.add('hidden');
             document.getElementById('scratch-area').classList.remove('hidden');
@@ -460,105 +383,59 @@
             const ctx = canvas.getContext('2d');
             const container = canvas.parentElement;
             const imgBase = document.getElementById('img-base');
-
             if (ASSETS.images.old) imgBase.src = ASSETS.images.old.src;
 
-            // Retina display fix
             const dpr = window.devicePixelRatio || 1;
             const rect = container.getBoundingClientRect();
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
+            canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
             ctx.scale(dpr, dpr);
 
-            // Draw initial mask
             const drawLayer = () => {
                 ctx.globalCompositeOperation = 'source-over';
-                if (ASSETS.images.modern && ASSETS.images.modern.complete) {
-                    ctx.drawImage(ASSETS.images.modern, 0, 0, rect.width, rect.height);
-                } else {
-                    ctx.fillStyle = '#111'; ctx.fillRect(0, 0, rect.width, rect.height);
-                    ctx.fillStyle = 'var(--secondary-color)'; ctx.font = "20px monospace"; 
-                    ctx.fillText("MASK LAYER", 50, 100);
-                }
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.lineWidth = 60; // 筆刷加大，讓90%更容易達成
-                ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                if (ASSETS.images.modern && ASSETS.images.modern.complete) ctx.drawImage(ASSETS.images.modern, 0, 0, rect.width, rect.height);
+                else { ctx.fillStyle = '#111'; ctx.fillRect(0, 0, rect.width, rect.height); ctx.fillStyle = 'var(--secondary-color)'; ctx.font = "20px monospace"; ctx.fillText("MASK LAYER", 50, 100); }
+                ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = 60; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
             };
-            
-            if (ASSETS.images.modern && !ASSETS.images.modern.complete) ASSETS.images.modern.onload = drawLayer;
-            else drawLayer();
+            if (ASSETS.images.modern && !ASSETS.images.modern.complete) ASSETS.images.modern.onload = drawLayer; else drawLayer();
 
-            let isDrawing = false;
-            let finished = false;
-
-            const getPos = (e) => {
-                const touch = e.touches[0];
-                const r = canvas.getBoundingClientRect();
-                return { x: touch.clientX - r.left, y: touch.clientY - r.top };
-            };
-
-            canvas.addEventListener('touchstart', (e) => { 
-                isDrawing = true; e.preventDefault();
-                const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y);
-            }, {passive:false});
-            
-            canvas.addEventListener('touchmove', (e) => {
-                if(!isDrawing || finished) return; e.preventDefault();
-                const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke();
-                ctx.beginPath(); ctx.arc(p.x, p.y, 30, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.moveTo(p.x, p.y);
-            }, {passive:false});
-
-            canvas.addEventListener('touchend', () => {
-                isDrawing = false;
-                if(!finished) checkProgress();
-            });
+            let isDrawing = false, finished = false;
+            const getPos = (e) => { const r = canvas.getBoundingClientRect(); return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top }; };
+            canvas.addEventListener('touchstart', (e) => { isDrawing = true; e.preventDefault(); ctx.beginPath(); ctx.moveTo(getPos(e).x, getPos(e).y); }, {passive:false});
+            canvas.addEventListener('touchmove', (e) => { if(!isDrawing || finished) return; e.preventDefault(); const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); ctx.beginPath(); ctx.arc(p.x, p.y, 30, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.moveTo(p.x, p.y); }, {passive:false});
+            canvas.addEventListener('touchend', () => { isDrawing = false; if(!finished) checkProgress(); });
 
             function checkProgress() {
                 const data = ctx.getImageData(0,0,canvas.width,canvas.height).data;
                 let transparent = 0;
-                // Sample every 40th pixel to improve perf
-                for(let i=3; i<data.length; i+=160) {
-                    if(data[i] < 128) transparent++;
-                }
-                const total = data.length / 160;
-                const pct = Math.floor((transparent/total)*100);
+                for(let i=3; i<data.length; i+=160) if(data[i] < 128) transparent++;
+                const pct = Math.floor((transparent/(data.length/160))*100);
                 document.getElementById('scratch-progress').innerText = `SYNC: ${pct}%`;
-                
-                if(pct >= CONFIG.scratchThreshold) {
-                    finished = true;
-                    finishStage1();
-                }
+                if(pct >= CONFIG.scratchThreshold) { finished = true; finishStage1(); }
             }
-            
             playScript(SCRIPTS.scratchIntro);
         }
 
         function finishStage1() {
             if(navigator.vibrate) navigator.vibrate([100,50,100]);
             triggerFlashTransition('stage-1', 'stage-2');
-            setTimeout(() => {
-                playScript(SCRIPTS.stage1Clear, initRoulette);
-            }, 2000);
+            setTimeout(() => playScript(SCRIPTS.stage1Clear, initRoulette), 2000);
         }
 
         function triggerFlashTransition(hideId, showId) {
             els.flash.classList.add('flash-active');
-            setTimeout(() => {
-                document.getElementById(hideId).classList.add('hidden');
-                document.getElementById(showId).classList.remove('hidden');
-            }, 1500);
+            setTimeout(() => { document.getElementById(hideId).classList.add('hidden'); document.getElementById(showId).classList.remove('hidden'); }, 1500);
             setTimeout(() => els.flash.classList.remove('flash-active'), 4000);
         }
 
-        // Roulette Logic
-        let rState = { angle: 0, speed: 2, running: false, mode: 'normal', targetColor: 'red', glitchCount: 0 };
+        // --- UPDATED ROULETTE LOGIC ---
+        let rState = { angle: 0, speed: 3, running: false, mode: 'normal', lockedColor: null, glitchCount: 0 };
         let animFrame;
 
         function initRoulette() {
-            rState.mode = 'round1'; rState.targetColor = 'red'; rState.speed = 3; rState.running = true;
-            els.rouletteMsg.innerText = "TARGET: 1883 (RED)";
-            els.rouletteMsg.style.color = "#F00"; els.rouletteMsg.style.borderColor = "#F00";
-            
+            // Round 1: Any Color
+            rState.mode = 'round1'; rState.speed = 3; rState.running = true; rState.lockedColor = null;
+            els.rouletteMsg.innerText = "TARGET: 紅白任一 (ANY)";
+            els.rouletteMsg.style.color = "#FFF"; els.rouletteMsg.style.borderColor = "#FFF";
             gameLoop();
             els.rouletteBtn.onclick = handleRouletteClick;
         }
@@ -572,48 +449,87 @@
         }
 
         function handleRouletteClick() {
+            // Glitch Logic (Improved)
             if (rState.mode === 'glitch') {
-                rState.glitchCount++; rState.speed -= 3;
+                rState.glitchCount++;
+                // 每次點擊減慢一點速度
+                rState.speed = rState.speed > 0 ? rState.speed - 2 : rState.speed + 2; 
                 if(navigator.vibrate) navigator.vibrate(50);
-                if (rState.glitchCount >= 5) {
+                
+                // 顯示進度
+                let progress = Math.min(100, Math.floor((rState.glitchCount / CONFIG.glitchClicksReq) * 100));
+                els.rouletteBtn.innerText = `STABILIZING... ${progress}%`;
+
+                if (rState.glitchCount >= CONFIG.glitchClicksReq) {
                     rState.running = false; cancelAnimationFrame(animFrame);
-                    els.rouletteBtn.classList.remove('glitch-mode'); els.rouletteBtn.innerText = "⚡ LOCK FREQUENCY";
+                    els.rouletteBtn.classList.remove('glitch-mode'); 
+                    els.rouletteBtn.innerText = "⚡ LOCK FREQUENCY";
                     setTimeout(() => playScript(SCRIPTS.round2Start, startRound2), 500);
                 }
                 return;
             }
 
+            // Normal Hit Check
             let effectiveAngle = (360 - rState.angle) % 360;
+            let hitRed = (effectiveAngle >= 0 && effectiveAngle < 60);
+            let hitWhite = (effectiveAngle >= 60 && effectiveAngle < 120);
             let hit = false;
-            // 0-60 is Red
-            if (rState.targetColor === 'red' && effectiveAngle >= 0 && effectiveAngle < 60) hit = true;
-            // 60-120 is White
-            if (rState.targetColor === 'white' && effectiveAngle >= 60 && effectiveAngle < 120) hit = true;
+
+            if (rState.mode === 'round1') {
+                // Round 1: Hit ANY
+                if (hitRed) { hit = true; rState.lockedColor = 'red'; }
+                else if (hitWhite) { hit = true; rState.lockedColor = 'white'; }
+            } else if (rState.mode === 'round2') {
+                // Round 2: Must hit the OTHER one
+                if (rState.lockedColor === 'red' && hitWhite) hit = true;
+                if (rState.lockedColor === 'white' && hitRed) hit = true;
+            }
 
             if (hit) {
                 if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 rState.running = false; cancelAnimationFrame(animFrame);
                 
                 if (rState.mode === 'round1') {
-                    els.rouletteMsg.innerText = "TARGET ACQUIRED";
+                    // Update Text to show what we locked
+                    let colorName = rState.lockedColor === 'red' ? "RED" : "WHITE";
+                    els.rouletteMsg.innerText = `LOCKED: ${colorName}`;
+                    els.rouletteMsg.style.color = rState.lockedColor === 'red' ? "#F00" : "#FFF";
+                    
                     setTimeout(() => playScript(SCRIPTS.glitchStart, () => {
-                        rState.running = true; rState.mode = 'glitch'; rState.speed = 20; rState.glitchCount = 0;
-                        els.rouletteBtn.innerText = "⚠️ STABILIZE ⚠️"; els.rouletteBtn.classList.add('glitch-mode');
+                        // Start Glitch
+                        rState.running = true; rState.mode = 'glitch'; 
+                        rState.speed = 30; // 瘋狂轉速
+                        rState.glitchCount = 0;
+                        els.rouletteBtn.innerText = "⚠️ STABILIZE ⚠️"; 
+                        els.rouletteBtn.classList.add('glitch-mode');
                         gameLoop();
                     }), 1000);
+
                 } else if (rState.mode === 'round2') {
-                    els.rouletteMsg.innerText = "SYNC COMPLETE"; els.rouletteMsg.style.color = "#0F0"; els.rouletteMsg.style.borderColor = "#0F0";
+                    els.rouletteMsg.innerText = "SYNC COMPLETE"; 
+                    els.rouletteMsg.style.color = "#0F0"; els.rouletteMsg.style.borderColor = "#0F0";
                     setTimeout(finishStage2, 1000);
                 }
             } else {
+                // Miss
                 if (navigator.vibrate) navigator.vibrate(200);
-                els.rouletteBtn.classList.add('glitch-mode'); setTimeout(() => els.rouletteBtn.classList.remove('glitch-mode'), 200);
+                els.rouletteBtn.classList.add('glitch-mode'); 
+                setTimeout(() => els.rouletteBtn.classList.remove('glitch-mode'), 200);
             }
         }
 
         function startRound2() {
-            rState.mode = 'round2'; rState.targetColor = 'white'; rState.speed = -4; rState.running = true;
-            els.rouletteMsg.innerText = "TARGET: 1918 (WHITE)"; els.rouletteMsg.style.color = "#FFF"; els.rouletteMsg.style.borderColor = "#FFF";
+            rState.mode = 'round2';
+            // 決定第二關目標：如果第一關是紅，這關就是白
+            let nextTarget = rState.lockedColor === 'red' ? 'WHITE' : 'RED';
+            
+            // 難度提升：速度變快 (8)，且方向相反 (負號)
+            rState.speed = -8; 
+            rState.running = true;
+            
+            els.rouletteMsg.innerText = `TARGET: ${nextTarget}`;
+            els.rouletteMsg.style.color = nextTarget === 'RED' ? "#F00" : "#FFF";
+            els.rouletteMsg.style.borderColor = nextTarget === 'RED' ? "#F00" : "#FFF";
             gameLoop();
         }
 
@@ -648,8 +564,6 @@
                 els.radarBtn.style.background = "var(--primary-color)"; els.radarBtn.style.color = "#000";
                 if(navigator.vibrate) navigator.vibrate(200);
                 setTimeout(() => { window.removeEventListener('deviceorientation', handleOrientation); playScript(SCRIPTS.final); }, 1000);
-            } else {
-                // optional: unlock if moved away
             }
         }
 
