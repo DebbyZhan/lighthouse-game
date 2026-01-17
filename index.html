@@ -9,7 +9,7 @@
 
     <style>
         /* ====================
-           CYBERPUNK CORE CSS
+           CYBERPUNK VISUAL CORE
            ==================== */
         :root {
             --primary-color: #0f0;   /* Green */
@@ -95,7 +95,7 @@
         }
         #color-wheel {
             width: 100%; height: 100%; border-radius: 50%;
-            /* 紅(0-60) / 白(60-120) / 綠 / 藍 / 黑 / 灰 */
+            /* 顏色分佈：紅 / 白 / 綠 / 藍 / 黑 / 灰 */
             background: conic-gradient(
                 #FF0000 0deg 60deg, 
                 #FFFFFF 60deg 120deg,
@@ -207,7 +207,7 @@
 
         <div id="stage-2" class="stage-box hidden">
             <h2 class="glow-text">光譜頻率調校</h2>
-            <div id="roulette-msg" class="target-display">TARGET: 紅白任一 (ANY)</div>
+            <div id="roulette-msg" class="target-display">TARGET: AWAITING INPUT...</div>
             <div class="roulette-container">
                 <div class="pointer"></div>
                 <div id="color-wheel"></div>
@@ -247,7 +247,7 @@
             targetGPS: { lat: 22.615556, lng: 120.265833 }, 
             gpsRadius: 1000000, 
             scratchThreshold: 90,
-            glitchClicksReq: 15 // 增加連點需求
+            glitchClicksReq: 15 
         };
 
         const ASSETS = { images: { modern: null, old: null } };
@@ -270,28 +270,28 @@
             ],
             stage1Clear: [
                 { name: "阿水", text: "雜訊清除了！紅色的磚牆... 沒錯，這就是我這個座標的燈塔！" },
-                { name: "阿水", text: "頻率接通了！但我不知道要打什麼顏色的光！" },
-                { name: "粽哥", text: "快看旁邊的解說牌！上面寫這座燈塔會發射哪兩種顏色的光？" },
-                { name: "阿水", text: "我看到資料了... 是『紅光』跟『白光』！好，那我們就打這兩種光過去！" },
-                { name: "系統AI", text: "光譜轉盤介面啟動。目標：紅色 (RED) 或白色 (WHITE)。" }
+                { name: "阿水", text: "頻率接通了！...但是光譜儀需要輸入兩個顏色參數才能啟動！" },
+                { name: "粽哥", text: "快看旁邊的解說牌！上面一定有寫這座燈塔會發射哪兩種顏色的光！" },
+                { name: "阿水", text: "我看到了！是那兩種顏色... 好，操作員，快在轉盤上輸入那兩個頻率！" },
+                { name: "系統AI", text: "光譜轉盤介面啟動。等待頻率輸入..." }
             ],
             glitchStart: [
                 { name: "系統警報", text: "⚠️ 警告：時空奇異點接近！迴路超載！" },
                 { name: "阿水", text: "訊號抓不住！轉盤要失控了！快按住穩定器！！" }
             ],
             round2Start: [
-                { name: "系統AI", text: "迴路穩定。第一階段光譜測試完成。" },
-                { name: "阿水", text: "呼... 手差點斷掉。好！剛才那個顏色成功了！現在馬上切換到另一種顏色！" }
+                { name: "系統AI", text: "迴路穩定。第一階段頻率鎖定。" },
+                { name: "阿水", text: "呼... 剛才那個顏色成功了！現在馬上輸入解說牌上的另一種顏色！" }
             ],
             stage2Clear: [
                 { name: "系統AI", text: "雙重光譜鎖定完成。SYNC COMPLETE。" },
                 { name: "阿水", text: "光束準備發射了！...等等，阿弟在北邊的海面上，我們要把光打向那邊！" },
-                { name: "粽哥", text: "抬頭看！燈塔最上面有一個『東西南北』的方向標！" },
+                { name: "粽哥", text: "操作員，抬頭往上看！燈塔的最上面有一個『東西南北』的風向儀！" },
                 { name: "阿水", text: "看到了！那是以前用來測風向的... 快確認『北方 (N)』在哪裡，把手機對準那個方向！" }
             ],
             final: [
                 { name: "系統AI", text: "目標鎖定。信號發射中..." },
-                { name: "阿水", text: "打中了！阿弟看到光了！他正在往岸邊游！" },
+                { name: "阿水", text: "打中了！紅白光照亮海面了！阿弟看到光了！" },
                 { name: "結局", text: "恭喜完成體驗版。 (END)" }
             ]
         };
@@ -436,7 +436,7 @@
         function initRoulette() {
             // Round 1: Any Color
             rState.mode = 'round1'; rState.speed = 3; rState.running = true; rState.lockedColor = null;
-            els.rouletteMsg.innerText = "TARGET: 紅白任一 (ANY)";
+            els.rouletteMsg.innerText = "TARGET: AWAITING INPUT...";
             els.rouletteMsg.style.color = "#FFF"; els.rouletteMsg.style.borderColor = "#FFF";
             gameLoop();
             els.rouletteBtn.onclick = handleRouletteClick;
@@ -474,9 +474,11 @@
             let hit = false;
 
             if (rState.mode === 'round1') {
+                // 第一階段：接受紅或白
                 if (hitRed) { hit = true; rState.lockedColor = 'red'; }
                 else if (hitWhite) { hit = true; rState.lockedColor = 'white'; }
             } else if (rState.mode === 'round2') {
+                // 第二階段：必須是另一色
                 if (rState.lockedColor === 'red' && hitWhite) hit = true;
                 if (rState.lockedColor === 'white' && hitRed) hit = true;
             }
@@ -504,9 +506,18 @@
                     setTimeout(finishStage2, 1000);
                 }
             } else {
+                // Miss or Invalid Color
                 if (navigator.vibrate) navigator.vibrate(200);
+                let originalText = els.rouletteMsg.innerText;
+                els.rouletteMsg.innerText = "INVALID FREQUENCY";
+                els.rouletteMsg.style.color = "var(--warn-color)";
                 els.rouletteBtn.classList.add('glitch-mode'); 
-                setTimeout(() => els.rouletteBtn.classList.remove('glitch-mode'), 200);
+                
+                setTimeout(() => {
+                    els.rouletteBtn.classList.remove('glitch-mode');
+                    els.rouletteMsg.innerText = originalText;
+                    els.rouletteMsg.style.color = "#FFF";
+                }, 500);
             }
         }
 
@@ -514,7 +525,8 @@
             rState.mode = 'round2';
             let nextTarget = rState.lockedColor === 'red' ? 'WHITE' : 'RED';
             rState.speed = -8; rState.running = true;
-            els.rouletteMsg.innerText = `TARGET: ${nextTarget}`;
+            // 這裡可以提示 Target，也可以保持神秘，但為了遊戲順暢度，還是提示要打另一色
+            els.rouletteMsg.innerText = `TARGET: 2nd COLOR (${nextTarget})`;
             els.rouletteMsg.style.color = nextTarget === 'RED' ? "#F00" : "#FFF";
             els.rouletteMsg.style.borderColor = nextTarget === 'RED' ? "#F00" : "#FFF";
             gameLoop();
