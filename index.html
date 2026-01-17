@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>乾卦・破曉之光 | FINAL SCENE</title>
+    <title>乾卦・破曉之光 | LOGIC FIXED</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=VT323&display=swap" rel="stylesheet">
 
@@ -95,7 +95,7 @@
         }
         #color-wheel {
             width: 100%; height: 100%; border-radius: 50%;
-            /* 顏色分佈：紅 / 白 / 綠 / 藍 / 黑 / 灰 */
+            /* 顏色分佈：紅(0-60) / 白(60-120) / 綠 / 藍 / 黑 / 灰 */
             background: conic-gradient(
                 #FF0000 0deg 60deg, 
                 #FFFFFF 60deg 120deg,
@@ -247,7 +247,7 @@
             targetGPS: { lat: 22.615556, lng: 120.265833 }, 
             gpsRadius: 1000000, 
             scratchThreshold: 90,
-            glitchClicksReq: 15 
+            glitchClicksReq: 30
         };
 
         const ASSETS = { images: { modern: null, old: null } };
@@ -296,7 +296,6 @@
             ]
         };
 
-        // ELEMENTS
         const els = {
             loading: document.getElementById('loading-screen'),
             startBtn: document.getElementById('start-btn'),
@@ -323,7 +322,6 @@
         async function init() {
             try {
                 await liff.init({ liffId: CONFIG.liffId });
-                // ASSETS.images.modern = createImg("YOUR_IMG");
                 if (!liff.isLoggedIn()) { liff.login(); return; }
                 els.startBtn.classList.remove('hidden');
                 document.getElementById('status-log').innerText = "SYSTEM READY";
@@ -430,12 +428,12 @@
         }
 
         // --- ROULETTE LOGIC ---
-        let rState = { angle: 0, speed: 3, running: false, mode: 'normal', lockedColor: null, glitchCount: 0 };
+        let rState = { angle: 0, speed: 3, running: false, mode: 'normal', lockedColor: null, targetColor: null, glitchCount: 0 };
         let animFrame;
 
         function initRoulette() {
-            // Round 1: Any Color
-            rState.mode = 'round1'; rState.speed = 3; rState.running = true; rState.lockedColor = null;
+            rState.mode = 'round1'; rState.speed = 3; rState.running = true; 
+            rState.lockedColor = null; rState.targetColor = null;
             els.rouletteMsg.innerText = "TARGET: AWAITING INPUT...";
             els.rouletteMsg.style.color = "#FFF"; els.rouletteMsg.style.borderColor = "#FFF";
             gameLoop();
@@ -451,7 +449,7 @@
         }
 
         function handleRouletteClick() {
-            // Glitch Logic
+            // Glitch QTE
             if (rState.mode === 'glitch') {
                 rState.glitchCount++;
                 rState.speed = rState.speed > 0 ? rState.speed - 2 : rState.speed + 2; 
@@ -472,15 +470,19 @@
             let hitRed = (effectiveAngle >= 0 && effectiveAngle < 60);
             let hitWhite = (effectiveAngle >= 60 && effectiveAngle < 120);
             let hit = false;
+            let errorMsg = "INVALID FREQUENCY";
 
             if (rState.mode === 'round1') {
-                // 第一階段：接受紅或白
                 if (hitRed) { hit = true; rState.lockedColor = 'red'; }
                 else if (hitWhite) { hit = true; rState.lockedColor = 'white'; }
             } else if (rState.mode === 'round2') {
-                // 第二階段：必須是另一色
-                if (rState.lockedColor === 'red' && hitWhite) hit = true;
-                if (rState.lockedColor === 'white' && hitRed) hit = true;
+                // Must hit the TARGET color (the other one)
+                if (rState.targetColor === 'red' && hitRed) hit = true;
+                else if (rState.targetColor === 'white' && hitWhite) hit = true;
+                
+                // Specific error for hitting same color
+                if (rState.lockedColor === 'red' && hitRed) errorMsg = "同頻率干擾 (SAME FREQ ERROR)";
+                if (rState.lockedColor === 'white' && hitWhite) errorMsg = "同頻率干擾 (SAME FREQ ERROR)";
             }
 
             if (hit) {
@@ -506,29 +508,33 @@
                     setTimeout(finishStage2, 1000);
                 }
             } else {
-                // Miss or Invalid Color
                 if (navigator.vibrate) navigator.vibrate(200);
                 let originalText = els.rouletteMsg.innerText;
-                els.rouletteMsg.innerText = "INVALID FREQUENCY";
+                els.rouletteMsg.innerText = errorMsg;
                 els.rouletteMsg.style.color = "var(--warn-color)";
                 els.rouletteBtn.classList.add('glitch-mode'); 
-                
                 setTimeout(() => {
                     els.rouletteBtn.classList.remove('glitch-mode');
                     els.rouletteMsg.innerText = originalText;
                     els.rouletteMsg.style.color = "#FFF";
-                }, 500);
+                }, 800);
             }
         }
 
         function startRound2() {
             rState.mode = 'round2';
-            let nextTarget = rState.lockedColor === 'red' ? 'WHITE' : 'RED';
-            rState.speed = -8; rState.running = true;
-            // 這裡可以提示 Target，也可以保持神秘，但為了遊戲順暢度，還是提示要打另一色
-            els.rouletteMsg.innerText = `TARGET: 2nd COLOR (${nextTarget})`;
-            els.rouletteMsg.style.color = nextTarget === 'RED' ? "#F00" : "#FFF";
-            els.rouletteMsg.style.borderColor = nextTarget === 'RED' ? "#F00" : "#FFF";
+            // Set Target to the OTHER color
+            rState.targetColor = (rState.lockedColor === 'red') ? 'white' : 'red';
+            
+            // Speed up and reverse
+            rState.speed = -8; 
+            rState.running = true;
+            
+            // Display: Waiting for 2nd Color (Don't spoil it, or spoil it, depends on preference. Here we guide them)
+            // But since text says "輸入解說牌上的另一種顏色", we can show AWAITING 2ND INPUT
+            els.rouletteMsg.innerText = `TARGET: 2nd COLOR`;
+            els.rouletteMsg.style.color = "#FFF";
+            els.rouletteMsg.style.borderColor = "#FFF";
             gameLoop();
         }
 
