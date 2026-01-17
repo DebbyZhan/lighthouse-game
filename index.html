@@ -15,11 +15,11 @@
             --primary-color: #0f0;   
             --secondary-color: #0ff; 
             --accent-color: #f0f;    
-            --warn-color: #ff2a2a;   /* 更鮮豔的紅 */
+            --warn-color: #ff2a2a;
             --bg-color: #050508;
             --mono-font: 'VT323', monospace;
             --tech-font: 'Orbitron', sans-serif;
-            --tension-level: 0; /* 0 to 1, JS控制 */
+            --tension-level: 0;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -46,7 +46,6 @@
         .hidden { display: none !important; }
         .glow-text { text-shadow: 0 0 5px var(--secondary-color), 0 0 15px var(--primary-color); }
         
-        /* Cyberpunk Button */
         .cyber-btn {
             padding: 15px 30px; margin-top: 25px;
             font-family: var(--tech-font); font-size: 1.2rem; letter-spacing: 2px;
@@ -67,7 +66,6 @@
             box-shadow: 0 0 20px #ffff00;
         }
 
-        /* Layout */
         #content-layer { width: 100%; height: 100%; transition: filter 0.5s ease; will-change: filter, opacity; }
         .content-dimmed { filter: brightness(0.2) blur(3px) grayscale(50%); }
         .stage-box { 
@@ -135,20 +133,14 @@
         .switch-frame {
             position: relative; width: 280px; height: 420px; margin-top: 20px;
             background: #111;
-            /* 工業風切角外框 */
             clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
             border: 2px solid #333;
-            /* 邊框動態光暈 */
             box-shadow: 0 0 calc(10px + 20px * var(--tension-level)) rgba(255, 50, 50, var(--tension-level));
             overflow: hidden; perspective: 1000px;
         }
-
-        /* 內部裝飾：網格與警示 */
         .panel-bg {
             position: absolute; top:0; left:0; width:100%; height:100%;
-            background-image: 
-                linear-gradient(rgba(50,50,50,0.5) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(50,50,50,0.5) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(50,50,50,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(50,50,50,0.5) 1px, transparent 1px);
             background-size: 20px 20px; opacity: 0.3; z-index: 0;
         }
         .hazard-sides {
@@ -159,102 +151,77 @@
         .hazard-left { left: 0; border-right: 1px solid #555; }
         .hazard-right { right: 0; border-left: 1px solid #555; }
 
-        /* 軌道槽 */
         .track-channel {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 80px; height: 320px;
-            background: #000;
-            border: 2px solid #444; border-radius: 4px;
-            box-shadow: inset 0 0 20px #000;
-            z-index: 2;
+            background: #000; border: 2px solid #444; border-radius: 4px;
+            box-shadow: inset 0 0 20px #000; z-index: 2;
         }
-        /* 軌道中心能量流 */
         .energy-stream {
             position: absolute; left: 50%; top: 10px; bottom: 10px; width: 6px; transform: translateX(-50%);
-            background: rgba(255, 0, 0, 0.2);
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+            background: rgba(255, 0, 0, 0.2); box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
             border-radius: 3px;
         }
-        /* 當拉動時，能量流變強 */
         .energy-stream.active {
             background: rgba(255, 0, 0, 0.8);
             box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.5);
         }
 
-        /* 閘刀手柄 (Energy Cell Style) */
         .lever-handle {
             position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 110px; height: 70px;
-            z-index: 10; cursor: grab; touch-action: none;
+            width: 110px; height: 70px; z-index: 10; cursor: grab; touch-action: none;
         }
-        
         .handle-body {
             width: 100%; height: 100%;
             background: linear-gradient(180deg, #222 0%, #111 100%);
             border: 2px solid #555; border-radius: 6px;
-            /* 根據拉動程度發紅光 */
             box-shadow: 0 0 calc(10px * var(--tension-level)) rgba(255, 0, 0, var(--tension-level));
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
+            display: flex; align-items: center; justify-content: center; position: relative;
         }
-        
-        /* 手柄中間的能量核心 */
         .handle-core {
             width: 80%; height: 60%;
-            background: repeating-linear-gradient(90deg, 
-                rgba(255,0,0,0.1), rgba(255,0,0,0.1) 2px, 
-                transparent 2px, transparent 5px);
-            border: 1px solid rgba(255,0,0,0.3);
-            box-shadow: inset 0 0 10px rgba(255,0,0,0.2);
-            display: flex; align-items: center; justify-content: center;
+            background: repeating-linear-gradient(90deg, rgba(255,0,0,0.1), rgba(255,0,0,0.1) 2px, transparent 2px, transparent 5px);
+            border: 1px solid rgba(255,0,0,0.3); box-shadow: inset 0 0 10px rgba(255,0,0,0.2);
+            display: flex; align-items: center; justify-content: center; position: relative;
+            overflow: visible; /* 讓光爆可以超出核心 */
         }
         .handle-text {
             color: rgba(255, 255, 255, 0.7); font-family: var(--tech-font); font-size: 0.8rem; letter-spacing: 2px;
-            text-shadow: 0 0 5px rgba(255,0,0,0.5); pointer-events: none;
+            text-shadow: 0 0 5px rgba(255,0,0,0.5); pointer-events: none; z-index: 2;
         }
-        
-        /* 核心過載動畫 */
         .lever-handle.surging .handle-core {
-            background: #ff0000;
-            box-shadow: 0 0 30px #ff0000;
+            background: #ff0000; box-shadow: 0 0 30px #ff0000;
             animation: pulse-core 0.1s infinite;
         }
 
-        /* 安全蓋 */
         .safety-cover {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20;
             transform-origin: top center; transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            background: rgba(0, 20, 30, 0.6);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            display: flex; align-items: center; justify-content: center;
+            background: rgba(0, 20, 30, 0.6); backdrop-filter: blur(4px);
+            border: 1px solid rgba(0, 255, 255, 0.3); display: flex; align-items: center; justify-content: center;
         }
-        .safety-cover::before { /* 掃描線紋路 */
-            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,255,0.05) 3px);
-            pointer-events: none;
-        }
+        .safety-cover::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,255,0.05) 3px); pointer-events: none; }
         .safety-cover.open { transform: rotateX(110deg); opacity: 0.2; pointer-events: none; }
         .lock-icon { font-size: 3rem; color: var(--secondary-color); text-shadow: 0 0 20px var(--secondary-color); }
 
-        /* --- 光爆特效 (Light Bloom) --- */
+        /* --- 改進版光爆特效 (Smooth Bloom) --- */
         #light-bloom {
-            position: absolute; left: 50%; bottom: 60px; /* 位於軌道底部 */
-            width: 10px; height: 10px; border-radius: 50%;
+            position: absolute; top: 50%; left: 50%; 
+            width: 20px; height: 20px; border-radius: 50%;
             background: #fff;
-            transform: translate(-50%, 50%) scale(0);
-            pointer-events: none; z-index: 999;
-            box-shadow: 0 0 50px 20px #fff;
+            transform: translate(-50%, -50%) scale(0);
+            pointer-events: none; z-index: 100;
+            /* 強烈的發光核心 */
+            box-shadow: 0 0 20px 10px #fff, 0 0 50px 20px #ffaaaa;
         }
-        .bloom-active { animation: lightExplosion 3s forwards cubic-bezier(0.1, 0, 0.9, 1); }
+        /* 從核心擴散，使用 cubic-bezier 模擬爆炸初速度快、後持續 */
+        .bloom-active { animation: lightExplosion 2s forwards cubic-bezier(0.1, 0, 0.2, 1); }
 
-        /* 全白遮罩 (配合光爆使用) */
         #whiteout-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #fff; z-index: 10000; opacity: 0; pointer-events: none;
-            mix-blend-mode: normal;
         }
-        .whiteout-fade-in { animation: smoothFadeIn 0.5s 0.2s forwards linear; }
+        .whiteout-fade-in { animation: smoothFadeIn 1s forwards; }
 
         /* Dialog System */
         #dialog-layer {
@@ -268,10 +235,7 @@
             padding: 20px; pointer-events: auto; cursor: pointer;
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
         }
-        .speaker { 
-            font-family: var(--tech-font); font-size: 0.9rem; padding: 4px 10px; margin-bottom: 10px; 
-            display: inline-block; background: var(--secondary-color); color: #000; font-weight: bold;
-        }
+        .speaker { font-family: var(--tech-font); font-size: 0.9rem; padding: 4px 10px; margin-bottom: 10px; display: inline-block; background: var(--secondary-color); color: #000; font-weight: bold; }
         .dialog-text { font-size: 1.2rem; color: #e0ffe0; min-height: 3.6rem; text-shadow: 0 0 2px rgba(0, 255, 0, 0.5); white-space: pre-wrap; line-height: 1.4; }
         .next-arrow { position: absolute; bottom: 10px; right: 15px; font-size: 1.5rem; color: var(--secondary-color); animation: bounce 1s infinite; }
         
@@ -285,19 +249,17 @@
         @keyframes flashPlateau { 0% { opacity: 0; } 20% { opacity: 1; } 60% { opacity: 1; } 100% { opacity: 0; } }
         @keyframes pulse-core { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
         
-        /* 光爆動畫：從中心擴散，模擬過曝 */
+        /* 光爆：從把手中心擴散，放大倍率增加以確保覆蓋全螢幕 */
         @keyframes lightExplosion {
-            0% { transform: translate(-50%, 50%) scale(0); opacity: 1; }
-            10% { transform: translate(-50%, 50%) scale(5); opacity: 1; } 
-            40% { transform: translate(-50%, 50%) scale(50); opacity: 1; } /* 吞噬螢幕 */
-            100% { transform: translate(-50%, 50%) scale(100); opacity: 1; }
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(250); opacity: 1; }
         }
         @keyframes smoothFadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
 
-        /* 最終過曝效果 (在 JS 中動態加入) */
+        /* 全域過曝效果：亮度極高，對比極低，製造致盲感 */
         .content-overexposed {
-            transition: filter 0.2s ease-in;
-            filter: brightness(500%) contrast(200%) grayscale(100%) !important;
+            transition: filter 1.5s cubic-bezier(0.1, 0, 0.9, 1);
+            filter: brightness(1000%) contrast(50%) grayscale(100%) !important;
         }
 
     </style>
@@ -367,12 +329,12 @@
                 
                 <div class="track-channel">
                     <div id="energy-stream" class="energy-stream"></div>
-                    <div id="light-bloom"></div>
 
                     <div id="lever-handle" class="lever-handle">
                         <div class="handle-body">
                             <div class="handle-core">
                                 <span class="handle-text">///</span>
+                                <div id="light-bloom"></div>
                             </div>
                         </div>
                     </div>
@@ -578,7 +540,7 @@
             setTimeout(() => els.flash.classList.remove('flash-active'), 4000);
         }
 
-        // --- ROULETTE (Stage 2) ---
+        // --- ROULETTE (Stage 2) CORRECTED ---
         let rState = { angle: 0, speed: 3, running: false, mode: 'normal', lockedColor: null, targetColor: null, glitchCount: 0 };
         let animFrame;
 
@@ -613,18 +575,41 @@
                 return;
             }
 
-            // Simple hit logic for demo
+            // ★★★ 修正後的判定邏輯 ★★★
+            // 計算目前指針(12點鐘)下方的角度
             let effectiveAngle = (360 - rState.angle) % 360;
-            let hit = (rState.mode === 'round1') || (rState.mode === 'round2' && effectiveAngle >= 120); // 簡化判定方便測試
+            // 根據 conic-gradient 定義：紅(0-60)，白(60-120)
+            let isRed = (effectiveAngle >= 0 && effectiveAngle < 60);
+            let isWhite = (effectiveAngle >= 60 && effectiveAngle < 120);
+            
+            let hit = false;
+            let errorMsg = "INVALID FREQUENCY";
 
-            if (true) { // Always hit for UX testing flow
+            if (rState.mode === 'round1') {
+                // 第一輪：只要命中 紅 或 白 皆可
+                if (isRed) { hit = true; rState.lockedColor = 'red'; }
+                else if (isWhite) { hit = true; rState.lockedColor = 'white'; }
+            } else if (rState.mode === 'round2') {
+                // 第二輪：必須命中「另一色」
+                if (rState.targetColor === 'red' && isRed) hit = true;
+                else if (rState.targetColor === 'white' && isWhite) hit = true;
+                
+                // 如果打中已經鎖定的顏色
+                if ((rState.lockedColor === 'red' && isRed) || (rState.lockedColor === 'white' && isWhite)) 
+                    errorMsg = "同頻率干擾 (SAME FREQ)";
+            }
+
+            if (hit) {
                 if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 rState.running = false; cancelAnimationFrame(animFrame);
                 
                 if (rState.mode === 'round1') {
-                    rState.lockedColor = 'red';
-                    els.rouletteMsg.innerText = `LOCKED: RED`;
-                    els.rouletteMsg.style.color = "#F00";
+                    // 根據命中顏色決定下一輪目標
+                    rState.targetColor = (rState.lockedColor === 'red') ? 'white' : 'red';
+                    
+                    let colorName = rState.lockedColor === 'red' ? "RED" : "WHITE";
+                    els.rouletteMsg.innerText = `LOCKED: ${colorName}`;
+                    els.rouletteMsg.style.color = rState.lockedColor === 'red' ? "#F00" : "#FFF";
                     setTimeout(() => playScript(SCRIPTS.glitchStart, () => {
                         rState.running = true; rState.mode = 'glitch'; 
                         rState.speed = 30; rState.glitchCount = 0;
@@ -637,6 +622,18 @@
                     els.rouletteMsg.style.color = "#0F0";
                     setTimeout(finishStage2, 1000);
                 }
+            } else {
+                // 失敗回饋
+                if (navigator.vibrate) navigator.vibrate(200);
+                let originalText = els.rouletteMsg.innerText;
+                els.rouletteMsg.innerText = errorMsg;
+                els.rouletteMsg.style.color = "var(--warn-color)";
+                els.rouletteBtn.classList.add('glitch-mode'); 
+                setTimeout(() => {
+                    els.rouletteBtn.classList.remove('glitch-mode');
+                    els.rouletteMsg.innerText = originalText;
+                    els.rouletteMsg.style.color = "#FFF";
+                }, 800);
             }
         }
 
@@ -703,7 +700,7 @@
                 els.safetyCover.classList.add('open');
                 els.instruction.innerText = "DRAG THE HANDLE DOWN TO FIRE";
                 els.instruction.style.color = "var(--warn-color)";
-                els.energyStream.classList.add('active'); // 能量流開始流動
+                els.energyStream.classList.add('active'); 
                 enableLever();
             };
         }
@@ -711,9 +708,9 @@
         function enableLever() {
             const handle = els.leverHandle;
             const container = els.stage4;
-            const trackHeight = 320; // 軌道高度
+            const trackHeight = 320; 
             const handleHeight = 70; 
-            const maxDrag = trackHeight - handleHeight - 20; // 20px padding
+            const maxDrag = trackHeight - handleHeight - 20; 
             let startY = 0;
             let currentY = 0;
             let isDragging = false;
@@ -732,14 +729,11 @@
                 currentY = y;
                 handle.style.transform = `translateX(-50%) translateY(${y}px)`;
                 
-                // --- Cyberpunk Dynamic Feedback ---
-                let tension = y / maxDrag; // 0.0 ~ 1.0
+                let tension = y / maxDrag; 
                 document.documentElement.style.setProperty('--tension-level', tension);
                 
                 if (tension > 0.1) {
-                    // 手機震動隨深度增加
                     if(navigator.vibrate && Math.random() > (1 - tension)) navigator.vibrate(10);
-                    // 畫面輕微抖動
                     let shake = tension * 2;
                     container.style.transform = `translate(${Math.random()*shake - shake/2}px, ${Math.random()*shake - shake/2}px)`;
                 }
@@ -755,12 +749,10 @@
             handle.addEventListener('touchend', () => {
                 isDragging = false;
                 if (currentY > maxDrag * 0.95) {
-                    // 吸附到底部
                     handle.style.transform = `translateX(-50%) translateY(${maxDrag}px)`;
                     document.documentElement.style.setProperty('--tension-level', 1);
                     triggerFinale();
                 } else {
-                    // 彈回
                     currentY = 0;
                     handle.style.transition = 'transform 0.3s cubic-bezier(0.5, 0, 0.2, 1)';
                     handle.style.transform = `translateX(-50%) translateY(0px)`;
@@ -773,26 +765,25 @@
         }
 
         function triggerFinale() {
-            // 1. 強烈震動 & 隱藏介面
+            // 1. 強烈震動
             if(navigator.vibrate) navigator.vibrate([2000]); 
             els.dialogLayer.style.display = 'none';
             els.instruction.innerText = "DISCHARGING...";
 
-            // 2. 光爆特效 (Light Bloom)
+            // 2. 觸發光爆 (從把手內部炸開)
             els.lightBloom.classList.add('bloom-active');
             
-            // 3. 過曝濾鏡 (模擬相機被亮光致盲)
-            // 在光爆擴大到一半時，讓背景整個過曝
+            // 3. 全域過曝 (Global Overexposure) - 0.5秒後啟動，模擬致盲
             setTimeout(() => {
                 els.content.classList.add('content-overexposed');
-            }, 800);
+            }, 500);
 
-            // 4. 純白遮罩進場 (無縫接軌)
+            // 4. 純白圖層進場
             setTimeout(() => {
                 els.whiteout.classList.add('whiteout-fade-in');
-            }, 1200);
+            }, 1000);
 
-            // 5. 結束與傳訊
+            // 5. 結束
             setTimeout(() => {
                 sendCompletionMessage();
             }, 3000);
