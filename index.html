@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>乾卦・破曉之光 | RADAR FIX</title>
+    <title>乾卦・破曉之光 | RADAR FIX & PUZZLE</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=VT323&display=swap" rel="stylesheet">
 
@@ -16,6 +16,7 @@
             --secondary-color: #0ff; 
             --accent-color: #f0f;    
             --warn-color: #ff2a2a;
+            --gold-color: #FFD700;
             --bg-color: #050508;
             --mono-font: 'VT323', monospace;
             --tech-font: 'Orbitron', sans-serif;
@@ -214,48 +215,104 @@
         .whiteout-fade-in { animation: smoothFadeIn 1s forwards; }
 
         /* ====================
-           DIALOG & HOLOGRAM SYSTEM
+           PUZZLE UI STYLES (NEW)
+           ==================== */
+        #puzzle-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 9994; /* Below dialog (9995) */
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .hazard-border {
+            position: absolute; top: 0; left: 0; width: 100%; height: 10px;
+            background: repeating-linear-gradient(45deg, #000, #000 20px, var(--gold-color) 20px, var(--gold-color) 40px);
+            box-shadow: 0 0 15px var(--gold-color);
+        }
+
+        .puzzle-box {
+            width: 90%; max-width: 360px;
+            background: #1a1a1a;
+            border: 2px solid #555; border-top: 4px solid var(--gold-color); border-bottom: 4px solid var(--gold-color);
+            padding: 20px; box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .puzzle-header {
+            text-align: center; margin-bottom: 15px;
+            font-family: var(--tech-font); color: var(--warn-color); font-weight: bold; font-size: 1.2rem;
+            letter-spacing: 2px; text-shadow: 0 0 10px var(--warn-color);
+        }
+
+        .blink-warn { animation: blink 1s infinite; }
+
+        .puzzle-screen {
+            background: #000; border: 2px inset #333; padding: 15px;
+            margin-bottom: 20px; position: relative;
+        }
+
+        .mech-info { font-size: 0.7rem; color: #888; font-family: sans-serif; letter-spacing: 1px; margin-bottom: 5px; }
+        .example-row { display: flex; justify-content: space-between; margin-bottom: 5px; border-bottom: 1px dashed #333; padding-bottom: 2px; }
+        .label { color: #aaa; font-size: 0.9rem; }
+        
+        .digital-font {
+            font-family: var(--mono-font); font-size: 1.4rem; color: var(--gold-color);
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .puzzle-divider { height: 1px; background: var(--warn-color); margin: 10px 0; opacity: 0.5; }
+        .big-eq { font-size: 1.6rem; color: var(--warn-color); text-align: center; width: 100%; display: block; margin: 10px 0; }
+
+        .input-display {
+            background: #220000; color: #FF0000;
+            font-family: var(--mono-font); font-size: 2.5rem; text-align: center;
+            padding: 5px; border: 1px solid #550000; margin-top: 10px;
+            text-shadow: 0 0 10px #FF0000; letter-spacing: 5px;
+            height: 60px; line-height: 50px;
+        }
+        .input-success { background: #002200 !important; color: #00FF00 !important; border-color: #00FF00 !important; text-shadow: 0 0 15px #00FF00 !important; }
+
+        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .num-btn {
+            background: #333; color: #FFF; border: 1px solid #555;
+            padding: 15px 0; font-family: var(--tech-font); font-size: 1.2rem;
+            cursor: pointer; transition: all 0.1s; box-shadow: 0 4px 0 #111;
+        }
+        .num-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #111; }
+        .num-btn.action { background: #554400; color: var(--gold-color); border-color: #776600; }
+
+        /* ====================
+           DIALOG & HOLOGRAM
            ==================== */
         #dialog-layer {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9995;
             display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: env(safe-area-inset-bottom, 20px);
         }
         
-        /* ★★★ 全息投影通訊視窗 (Hologram Portrait) ★★★ */
         #hologram-container {
-            position: absolute; top: 20%; left: 50%; transform: translateX(-50%); /* 位於畫面中央 */
-            width: 180px; height: 180px; /* 加大尺寸 */
-            pointer-events: none; z-index: 9996;
+            position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+            width: 180px; height: 180px; pointer-events: none; z-index: 9996;
             animation: hologram-float 4s ease-in-out infinite;
         }
         
         .hologram-frame {
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid var(--secondary-color);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--secondary-color); box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
             overflow: hidden; opacity: 0.9;
-            /* 邊角切割造型 */
             clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
         }
 
         .hologram-frame img {
             width: 100%; height: 100%; object-fit: cover;
-            /* 全息濾鏡：藍綠色調 + 掃描線感 */
             filter: contrast(1.2) brightness(1.2) sepia(100%) hue-rotate(180deg) saturate(2);
             mix-blend-mode: hard-light;
         }
-
-        /* 掃描線與干擾特效 */
         .hologram-frame::after {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: repeating-linear-gradient(0deg, rgba(0,255,255,0.1), rgba(0,255,255,0.1) 2px, transparent 2px, transparent 4px);
-            background-size: 100% 10px;
-            animation: hologram-scan 1s linear infinite;
-            pointer-events: none;
+            background-size: 100% 10px; animation: hologram-scan 1s linear infinite; pointer-events: none;
         }
 
-        /* 文字對話框 (保持在底部) */
         #dialog-box {
             position: relative; width: 96%; margin: 0 auto 10px auto;
             background: linear-gradient(180deg, rgba(0, 20, 30, 0.95) 0%, rgba(0, 10, 15, 0.98) 100%);
@@ -267,8 +324,7 @@
         
         .speaker { 
             font-family: var(--tech-font); font-size: 0.9rem; padding: 2px 8px; margin-bottom: 5px; 
-            align-self: flex-start;
-            background: var(--secondary-color); color: #000; font-weight: bold;
+            align-self: flex-start; background: var(--secondary-color); color: #000; font-weight: bold;
         }
         .dialog-text { 
             font-size: 1.1rem; color: #e0ffe0; min-height: 3rem; 
@@ -289,6 +345,9 @@
         @keyframes smoothFadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
         @keyframes hologram-scan { 0% { background-position: 0 0; } 100% { background-position: 0 20px; } }
         @keyframes hologram-float { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-10px); } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes shake-hard { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
 
         .content-overexposed { transition: filter 1.5s cubic-bezier(0.1, 0, 0.9, 1); filter: brightness(1000%) contrast(50%) grayscale(100%) !important; }
 
@@ -378,6 +437,52 @@
         </div>
     </div>
 
+    <div id="puzzle-overlay" class="hidden">
+        <div class="hazard-border"></div>
+        <div class="puzzle-box">
+            <div class="puzzle-header">
+                <span class="blink-warn">⚠️ SAFETY LOCKDOWN</span>
+            </div>
+            
+            <div class="puzzle-screen">
+                <div class="mech-info">TUMBLER MECHANISM CHECK</div>
+                
+                <div class="example-row">
+                    <span class="label">SET A:</span>
+                    <span class="digital-font">1 + 1 = 4</span>
+                </div>
+                <div class="example-row">
+                    <span class="label">SET B:</span>
+                    <span class="digital-font">7 - 1 = 1</span>
+                </div>
+                
+                <div class="puzzle-divider"></div>
+                
+                <div class="puzzle-question">
+                    <div class="mech-info">MANUAL OVERRIDE CODE</div>
+                    <div class="digital-font big-eq">( 8 + 1 ) × 7 = ?</div>
+                </div>
+
+                <div class="input-display" id="puzzle-input-screen">_ _</div>
+            </div>
+
+            <div class="numpad">
+                <button class="num-btn" onclick="inputPad(1)">1</button>
+                <button class="num-btn" onclick="inputPad(2)">2</button>
+                <button class="num-btn" onclick="inputPad(3)">3</button>
+                <button class="num-btn" onclick="inputPad(4)">4</button>
+                <button class="num-btn" onclick="inputPad(5)">5</button>
+                <button class="num-btn" onclick="inputPad(6)">6</button>
+                <button class="num-btn" onclick="inputPad(7)">7</button>
+                <button class="num-btn" onclick="inputPad(8)">8</button>
+                <button class="num-btn" onclick="inputPad(9)">9</button>
+                <button class="num-btn action" onclick="inputPad('CLR')">CLR</button>
+                <button class="num-btn" onclick="inputPad(0)">0</button>
+                <button class="num-btn action" onclick="inputPad('OK')">ENT</button>
+            </div>
+        </div>
+    </div>
+
     <div id="dialog-layer" class="hidden">
         
         <div id="hologram-container" class="hidden">
@@ -406,7 +511,7 @@
 
         const ASSETS = { images: { modern: null, old: null } };
 
-        // ★★★ 角色圖片設定 (建議更換為透明背景的 PNG 效果更佳) ★★★
+        // ★★★ 角色圖片設定 ★★★
         const CHAR_IMAGES = {
             "阿水": "https://placehold.co/200x200/003366/00FFFF?text=WATER", 
             "粽哥": "https://placehold.co/200x200/333300/FFFF00?text=ZONG",  
@@ -444,6 +549,17 @@
                 { name: "系統AI", text: "鎖定完成。發射路徑校正完畢。" },
                 { name: "粽哥", text: "好，就是現在！總開關的安全蓋已經解鎖了！" },
                 { name: "阿水", text: "操作員，打開蓋子，把那個閘刀用力拉到底！讓光束射出去！" }
+            ],
+            puzzleJam: [
+                { name: "阿水", text: "（用力聲...）打不開！這個蓋子卡死了！" },
+                { name: "阿水", text: "鎖頭旁邊亮起了奇怪的紅字... 它在擋著我！上面寫著 1 + 1 = 4？這什麼鬼畫符？" },
+                { name: "粽哥", text: "阿水，別用蠻力。這是一個『結構鎖』。" },
+                { name: "粽哥", text: "{player_name}，仔細看那些數字。那個機關不是在算數學，它是在檢測鎖芯裡有幾根『光條 (Pins)』。" },
+                { name: "粽哥", text: "算出解開這道鎖總共需要退開幾根卡榫，輸入數字手動解除！" }
+            ],
+            puzzleSolved: [
+                { name: "阿水", text: "開了！卡榫全部退開了！" },
+                { name: "阿水", text: "{player_name}，路通了！抓緊閘刀... 把它拉到底！！" }
             ]
         };
 
@@ -457,7 +573,7 @@
             speaker: document.getElementById('speaker-name'),
             text: document.getElementById('dialog-text-container'),
             arrow: document.getElementById('next-arrow'),
-            hologramContainer: document.getElementById('hologram-container'), // 新的全息圖容器
+            hologramContainer: document.getElementById('hologram-container'), 
             portraitImg: document.getElementById('char-portrait-img'),
             stage1: document.getElementById('stage-1'),
             stage2: document.getElementById('stage-2'),
@@ -474,7 +590,9 @@
             whiteout: document.getElementById('whiteout-layer'),
             instruction: document.getElementById('instruction-msg'),
             energyStream: document.getElementById('energy-stream'),
-            lightBloom: document.getElementById('light-bloom')
+            lightBloom: document.getElementById('light-bloom'),
+            puzzleOverlay: document.getElementById('puzzle-overlay'),
+            inputScreen: document.getElementById('puzzle-input-screen')
         };
 
         let scriptQueue = [], onScriptEnd = null, isTyping = false, typingTimer = null, currentFullText = "";
@@ -508,9 +626,9 @@
             const line = scriptQueue.shift();
             
             els.speaker.innerText = line.name; 
-            currentFullText = line.text;
+            currentFullText = line.text.replace('{player_name}', '操作員'); // 簡易替換名稱
             
-            // 判斷角色並更新圖片 (Hologram Logic)
+            // 判斷角色並更新圖片
             let imgKey = null;
             if(line.name.includes("阿水")) imgKey = "阿水";
             else if(line.name.includes("粽哥")) imgKey = "粽哥";
@@ -699,7 +817,7 @@
             setTimeout(() => playScript(SCRIPTS.stage2Clear, initRadar), 2000);
         }
 
-        // --- RADAR (Stage 3) ---
+        // --- RADAR (Stage 3) + iOS Permission Fix ---
         let lockTimer = null;
         function initRadar() {
             els.radarBtn.innerText = "ACTIVATE SENSORS";
@@ -708,8 +826,29 @@
         }
 
         function startCompass() {
-            els.radarBtn.innerText = "SEARCHING..."; els.radarBtn.disabled = true; els.radarBtn.style.opacity = 0.5;
+            // iOS 13+ 權限請求邏輯
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(response => {
+                        if (response === 'granted') {
+                            activateCompassListener();
+                        } else {
+                            alert("請允許羅盤權限以進行定位！");
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                // Android 或非 iOS 13+
+                activateCompassListener();
+            }
+        }
+
+        function activateCompassListener() {
+            els.radarBtn.innerText = "SEARCHING..."; 
+            els.radarBtn.disabled = true; 
+            els.radarBtn.style.opacity = 0.5;
             window.addEventListener('deviceorientation', handleOrientation);
+            // Fallback for desktop testing
             if(!window.DeviceOrientationEvent) setTimeout(() => { els.compassUI.style.transform = `rotate(0deg)`; handleOrientation({webkitCompassHeading:0}); }, 2000);
         }
 
@@ -739,20 +878,94 @@
             }
         }
 
-        // --- STAGE 4: THE CYBERPUNK SWITCH ---
+        // --- STAGE 4: SWITCH & PUZZLE ---
+        let isPuzzleSolved = false;
+        let currentInput = "";
+
         function initSwitch() {
             triggerFlashTransition('stage-3', 'stage-4');
             els.instruction.innerText = ">>> TAP SAFETY COVER TO UNLOCK <<<";
             els.instruction.classList.add('glow-text');
+            els.safetyCover.onclick = handleSafetyClick;
+        }
+
+        function handleSafetyClick() {
+            if (isPuzzleSolved) {
+                openSafetyCoverVisuals();
+            } else {
+                triggerPuzzleSequence();
+            }
+        }
+
+        function triggerPuzzleSequence() {
+            if(navigator.vibrate) navigator.vibrate([50, 50, 50, 200]);
+            els.safetyCover.style.animation = "shake-hard 0.5s";
+            els.instruction.innerText = "⚠️ ERROR: MECHANISM JAMMED";
+            els.instruction.style.color = "var(--warn-color)";
+            setTimeout(() => { els.safetyCover.style.animation = ""; }, 500);
+
+            playScript(SCRIPTS.puzzleJam, () => {
+                els.puzzleOverlay.classList.remove('hidden');
+            });
+        }
+
+        window.inputPad = function(val) {
+            if(isPuzzleSolved) return;
+            const screen = els.inputScreen;
+            if (val === 'CLR') {
+                currentInput = "";
+                if(navigator.vibrate) navigator.vibrate(20);
+            } else if (val === 'OK') {
+                checkAnswer();
+            } else {
+                if (currentInput.length < 2) {
+                    currentInput += val;
+                    if(navigator.vibrate) navigator.vibrate(20);
+                }
+            }
+            screen.innerText = currentInput === "" ? "_ _" : currentInput;
+        }
+
+        function checkAnswer() {
+            if (currentInput === "27") {
+                solvePuzzle();
+            } else {
+                if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                const screen = els.inputScreen;
+                screen.style.color = "var(--warn-color)";
+                screen.style.borderColor = "var(--warn-color)";
+                setTimeout(() => {
+                    currentInput = "";
+                    screen.innerText = "_ _";
+                    screen.style.color = "#FF0000";
+                    screen.style.borderColor = "#550000";
+                }, 500);
+            }
+        }
+
+        function solvePuzzle() {
+            isPuzzleSolved = true;
+            const screen = els.inputScreen;
+            screen.innerText = "OPEN";
+            screen.classList.add('input-success');
+            if(navigator.vibrate) navigator.vibrate([50, 50, 50, 50, 200]);
             
-            els.safetyCover.onclick = () => {
-                if(navigator.vibrate) navigator.vibrate(50);
-                els.safetyCover.classList.add('open');
-                els.instruction.innerText = "DRAG THE HANDLE DOWN TO FIRE";
-                els.instruction.style.color = "var(--warn-color)";
-                els.energyStream.classList.add('active'); 
-                enableLever();
-            };
+            setTimeout(() => {
+                els.puzzleOverlay.classList.add('hidden');
+                playScript(SCRIPTS.puzzleSolved, () => {
+                    openSafetyCoverVisuals();
+                });
+            }, 1000);
+        }
+
+        function openSafetyCoverVisuals() {
+            if(navigator.vibrate) navigator.vibrate(50);
+            els.safetyCover.classList.add('open');
+            els.instruction.innerText = "DRAG THE HANDLE DOWN TO FIRE";
+            els.instruction.style.color = "var(--warn-color)";
+            els.energyStream.classList.add('active'); 
+            enableLever();
+            els.safetyCover.onclick = null;
         }
 
         function enableLever() {
