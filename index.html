@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>乾卦・破曉之光 | FINAL REFINED</title>
+    <title>乾卦・破曉之光 | FINAL SCENE</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=VT323&display=swap" rel="stylesheet">
 
@@ -271,9 +271,9 @@
             stage1Clear: [
                 { name: "阿水", text: "雜訊清除了！紅色的磚牆... 沒錯，這就是我這個座標的燈塔！" },
                 { name: "阿水", text: "頻率接通了！但我不知道要打什麼顏色的光！" },
-                { name: "阿水", text: "解說牌上說這座燈塔有過『紅磚』跟『白牆』兩種時期，但沒標註哪年是哪種顏色..." },
-                { name: "粽哥", text: "管他的！系統顯示兩種光譜反應都很強，我們兩個顏色都打打看！" },
-                { name: "系統AI", text: "光譜轉盤介面啟動。請任意鎖定紅色 (RED) 或白色 (WHITE) 頻率。" }
+                { name: "粽哥", text: "快看旁邊的解說牌！上面寫這座燈塔會發射哪兩種顏色的光？" },
+                { name: "阿水", text: "我看到資料了... 是『紅光』跟『白光』！好，那我們就打這兩種光過去！" },
+                { name: "系統AI", text: "光譜轉盤介面啟動。目標：紅色 (RED) 或白色 (WHITE)。" }
             ],
             glitchStart: [
                 { name: "系統警報", text: "⚠️ 警告：時空奇異點接近！迴路超載！" },
@@ -285,11 +285,13 @@
             ],
             stage2Clear: [
                 { name: "系統AI", text: "雙重光譜鎖定完成。SYNC COMPLETE。" },
-                { name: "阿水", text: "光打出去了！...我看見阿弟了！他往北邊的海面跑了！" },
-                { name: "阿水", text: "快把雷達對準北方 (N)！我們不能跟丟！" }
+                { name: "阿水", text: "光束準備發射了！...等等，阿弟在北邊的海面上，我們要把光打向那邊！" },
+                { name: "粽哥", text: "抬頭看！燈塔最上面有一個『東西南北』的方向標！" },
+                { name: "阿水", text: "看到了！那是以前用來測風向的... 快確認『北方 (N)』在哪裡，把手機對準那個方向！" }
             ],
             final: [
-                { name: "系統AI", text: "目標鎖定。傳送坐標數據..." },
+                { name: "系統AI", text: "目標鎖定。信號發射中..." },
+                { name: "阿水", text: "打中了！阿弟看到光了！他正在往岸邊游！" },
                 { name: "結局", text: "恭喜完成體驗版。 (END)" }
             ]
         };
@@ -427,7 +429,7 @@
             setTimeout(() => els.flash.classList.remove('flash-active'), 4000);
         }
 
-        // --- UPDATED ROULETTE LOGIC ---
+        // --- ROULETTE LOGIC ---
         let rState = { angle: 0, speed: 3, running: false, mode: 'normal', lockedColor: null, glitchCount: 0 };
         let animFrame;
 
@@ -449,17 +451,13 @@
         }
 
         function handleRouletteClick() {
-            // Glitch Logic (Improved)
+            // Glitch Logic
             if (rState.mode === 'glitch') {
                 rState.glitchCount++;
-                // 每次點擊減慢一點速度
                 rState.speed = rState.speed > 0 ? rState.speed - 2 : rState.speed + 2; 
                 if(navigator.vibrate) navigator.vibrate(50);
-                
-                // 顯示進度
                 let progress = Math.min(100, Math.floor((rState.glitchCount / CONFIG.glitchClicksReq) * 100));
                 els.rouletteBtn.innerText = `STABILIZING... ${progress}%`;
-
                 if (rState.glitchCount >= CONFIG.glitchClicksReq) {
                     rState.running = false; cancelAnimationFrame(animFrame);
                     els.rouletteBtn.classList.remove('glitch-mode'); 
@@ -476,11 +474,9 @@
             let hit = false;
 
             if (rState.mode === 'round1') {
-                // Round 1: Hit ANY
                 if (hitRed) { hit = true; rState.lockedColor = 'red'; }
                 else if (hitWhite) { hit = true; rState.lockedColor = 'white'; }
             } else if (rState.mode === 'round2') {
-                // Round 2: Must hit the OTHER one
                 if (rState.lockedColor === 'red' && hitWhite) hit = true;
                 if (rState.lockedColor === 'white' && hitRed) hit = true;
             }
@@ -490,16 +486,13 @@
                 rState.running = false; cancelAnimationFrame(animFrame);
                 
                 if (rState.mode === 'round1') {
-                    // Update Text to show what we locked
                     let colorName = rState.lockedColor === 'red' ? "RED" : "WHITE";
                     els.rouletteMsg.innerText = `LOCKED: ${colorName}`;
                     els.rouletteMsg.style.color = rState.lockedColor === 'red' ? "#F00" : "#FFF";
                     
                     setTimeout(() => playScript(SCRIPTS.glitchStart, () => {
-                        // Start Glitch
                         rState.running = true; rState.mode = 'glitch'; 
-                        rState.speed = 30; // 瘋狂轉速
-                        rState.glitchCount = 0;
+                        rState.speed = 30; rState.glitchCount = 0;
                         els.rouletteBtn.innerText = "⚠️ STABILIZE ⚠️"; 
                         els.rouletteBtn.classList.add('glitch-mode');
                         gameLoop();
@@ -511,7 +504,6 @@
                     setTimeout(finishStage2, 1000);
                 }
             } else {
-                // Miss
                 if (navigator.vibrate) navigator.vibrate(200);
                 els.rouletteBtn.classList.add('glitch-mode'); 
                 setTimeout(() => els.rouletteBtn.classList.remove('glitch-mode'), 200);
@@ -520,13 +512,8 @@
 
         function startRound2() {
             rState.mode = 'round2';
-            // 決定第二關目標：如果第一關是紅，這關就是白
             let nextTarget = rState.lockedColor === 'red' ? 'WHITE' : 'RED';
-            
-            // 難度提升：速度變快 (8)，且方向相反 (負號)
-            rState.speed = -8; 
-            rState.running = true;
-            
+            rState.speed = -8; rState.running = true;
             els.rouletteMsg.innerText = `TARGET: ${nextTarget}`;
             els.rouletteMsg.style.color = nextTarget === 'RED' ? "#F00" : "#FFF";
             els.rouletteMsg.style.borderColor = nextTarget === 'RED' ? "#F00" : "#FFF";
