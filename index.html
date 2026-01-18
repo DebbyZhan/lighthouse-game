@@ -438,50 +438,57 @@
     </div>
 
     <div id="puzzle-overlay" class="hidden">
-        <div class="hazard-border"></div>
-        <div class="puzzle-box">
-            <div class="puzzle-header">
-                <span class="blink-warn">⚠️ SAFETY LOCKDOWN</span>
+    <div class="hazard-border"></div>
+    <div class="puzzle-box">
+        <div class="puzzle-header">
+            <span class="blink-warn">⚠️ TEMPORAL SYNC</span>
+        </div>
+        
+        <div class="puzzle-screen">
+            <div class="mech-info">LOGIC: 12-HOUR CYCLE</div>
+            
+            <div class="example-row">
+                <span class="label">TEST 1:</span>
+                <span class="digital-font">09 + 04 = 01</span>
+            </div>
+            <div class="example-row">
+                <span class="label">TEST 2:</span>
+                <span class="digital-font">11 + 11 = 10</span>
             </div>
             
-            <div class="puzzle-screen">
-                <div class="mech-info">TUMBLER MECHANISM CHECK</div>
-                
-                <div class="example-row">
-                    <span class="label">SET A:</span>
-                    <span class="digital-font">1 + 1 = 4</span>
-                </div>
-                <div class="example-row">
-                    <span class="label">SET B:</span>
-                    <span class="digital-font">7 - 1 = 1</span>
-                </div>
-                
-                <div class="puzzle-divider"></div>
-                
-                <div class="puzzle-question">
-                    <div class="mech-info">MANUAL OVERRIDE CODE</div>
-                    <div class="digital-font big-eq">( 8 + 1 ) × 7 = ?</div>
-                </div>
-
-                <div class="input-display" id="puzzle-input-screen">_ _</div>
+            <div class="puzzle-divider"></div>
+            
+            <div class="puzzle-question">
+                <div class="mech-info">TARGET OFFSET</div>
+                <div class="digital-font big-eq">07 + 06 = ?</div>
             </div>
 
-            <div class="numpad">
-                <button class="num-btn" onclick="inputPad(1)">1</button>
-                <button class="num-btn" onclick="inputPad(2)">2</button>
-                <button class="num-btn" onclick="inputPad(3)">3</button>
-                <button class="num-btn" onclick="inputPad(4)">4</button>
-                <button class="num-btn" onclick="inputPad(5)">5</button>
-                <button class="num-btn" onclick="inputPad(6)">6</button>
-                <button class="num-btn" onclick="inputPad(7)">7</button>
-                <button class="num-btn" onclick="inputPad(8)">8</button>
-                <button class="num-btn" onclick="inputPad(9)">9</button>
-                <button class="num-btn action" onclick="inputPad('CLR')">CLR</button>
-                <button class="num-btn" onclick="inputPad(0)">0</button>
-                <button class="num-btn action" onclick="inputPad('OK')">ENT</button>
+            <div class="input-display" id="puzzle-input-screen">_ _</div>
+
+            <div id="hint-area" class="hidden" style="margin-top: 10px; min-height: 40px;">
+                <div id="hint-text" style="color: var(--secondary-color); font-size: 0.9rem; margin-bottom: 5px; font-family: var(--tech-font);"></div>
+                <button id="hint-btn" class="cyber-btn" style="padding: 5px 20px; font-size: 0.9rem; width: 100%; margin-top: 0; border-color: #ffff00; color: #ffff00;">
+                    [ ? ] REQUEST HINT
+                </button>
             </div>
         </div>
+
+        <div class="numpad">
+            <button class="num-btn" onclick="inputPad(1)">1</button>
+            <button class="num-btn" onclick="inputPad(2)">2</button>
+            <button class="num-btn" onclick="inputPad(3)">3</button>
+            <button class="num-btn" onclick="inputPad(4)">4</button>
+            <button class="num-btn" onclick="inputPad(5)">5</button>
+            <button class="num-btn" onclick="inputPad(6)">6</button>
+            <button class="num-btn" onclick="inputPad(7)">7</button>
+            <button class="num-btn" onclick="inputPad(8)">8</button>
+            <button class="num-btn" onclick="inputPad(9)">9</button>
+            <button class="num-btn action" onclick="inputPad('CLR')">CLR</button>
+            <button class="num-btn" onclick="inputPad(0)">0</button>
+            <button class="num-btn action" onclick="inputPad('OK')">ENT</button>
+        </div>
     </div>
+</div>
 
     <div id="dialog-layer" class="hidden">
         
@@ -557,6 +564,20 @@
                 { name: "粽哥", text: "{player_name}，仔細看那些數字。那個機關不是在算數學，它是在檢測鎖芯裡有幾根『光條 (Pins)』。" },
                 { name: "粽哥", text: "算出解開這道鎖總共需要退開幾根卡榫，輸入數字手動解除！" }
             ],
+
+            // ★★★ 新增提示文字 (三個階段) ★★★
+            puzzleHints: [
+                "提示 1：不要用一般的十進位思考。這是一個圓形的循環。",
+                "提示 2：想想牆上的時鐘。過了 12 點之後會變成幾點？",
+                "提示 3 (最終)：7 點鐘再過 6 小時是 13 點... 也就是下午 1 點。 (答案是 01)"
+            ],
+
+            puzzleSolved: [
+                { name: "阿水", text: "鎖開了！時間迴路同步完成！" },
+                { name: "阿水", text: "{player_name}，最後一步了！拉下閘刀！" }
+            ]
+
+            
             puzzleSolved: [
                 { name: "阿水", text: "開了！卡榫全部退開了！" },
                 { name: "阿水", text: "{player_name}，路通了！抓緊閘刀... 把它拉到底！！" }
@@ -926,22 +947,81 @@
             screen.innerText = currentInput === "" ? "_ _" : currentInput;
         }
 
-        function checkAnswer() {
-            if (currentInput === "27") {
-                solvePuzzle();
-            } else {
-                if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
-                const screen = els.inputScreen;
-                screen.style.color = "var(--warn-color)";
-                screen.style.borderColor = "var(--warn-color)";
-                setTimeout(() => {
-                    currentInput = "";
-                    screen.innerText = "_ _";
-                    screen.style.color = "#FF0000";
-                    screen.style.borderColor = "#550000";
-                }, 500);
-            }
+        // --- PUZZLE & HINT LOGIC ---
+
+let currentHintLevel = 0; // 0=沒按過, 1=第一階段, 2=第二階段, 3=答案
+const puzzleAnswer = "01"; // 7+6=13 -> 01
+
+// 取得新元素的參照 (請確認放在 els 物件定義之後，或是直接在函數裡抓)
+function getHintEls() {
+    return {
+        area: document.getElementById('hint-area'),
+        text: document.getElementById('hint-text'),
+        btn: document.getElementById('hint-btn')
+    };
+}
+
+// 處理提示按鈕點擊
+document.getElementById('hint-btn').onclick = function() {
+    const el = getHintEls();
+    if (navigator.vibrate) navigator.vibrate(50);
+
+    // 顯示對應階段的提示
+    if (currentHintLevel < SCRIPTS.puzzleHints.length) {
+        el.text.innerText = SCRIPTS.puzzleHints[currentHintLevel];
+        // 淡入動畫
+        el.text.style.opacity = 0;
+        setTimeout(() => el.text.style.opacity = 1, 50);
+        
+        currentHintLevel++; // 推進到下一階段
+    }
+
+    // 更新按鈕文字
+    if (currentHintLevel >= SCRIPTS.puzzleHints.length) {
+        el.btn.innerText = "MAX HINT REACHED";
+        el.btn.disabled = true;
+        el.btn.style.opacity = 0.5;
+    } else {
+        el.btn.innerText = "[ ? ] NEXT HINT";
+    }
+};
+
+// 檢查答案的邏輯
+function checkAnswer() {
+    const screen = els.inputScreen;
+    const elHint = getHintEls();
+
+    if (currentInput === puzzleAnswer || currentInput === "1") { 
+        // 接受 "01" 或 "1"
+        solvePuzzle();
+    } else {
+        // --- 答錯邏輯 ---
+        if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        
+        // 1. 視覺報錯
+        screen.style.color = "var(--warn-color)";
+        screen.style.borderColor = "var(--warn-color)";
+        screen.innerText = "ERR";
+        
+        // 2. 顯示提示請求按鈕 (如果是第一次答錯)
+        if (elHint.area.classList.contains('hidden')) {
+            elHint.area.classList.remove('hidden');
+            // 重置提示狀態
+            currentHintLevel = 0; 
+            elHint.text.innerText = "";
+            elHint.btn.innerText = "[ ? ] REQUEST HINT";
+            elHint.btn.disabled = false;
+            elHint.btn.style.opacity = 1;
         }
+
+        setTimeout(() => {
+            currentInput = "";
+            screen.innerText = "_ _";
+            screen.style.color = "#FF0000";
+            screen.style.borderColor = "#550000";
+        }, 800);
+    }
+}
 
         function solvePuzzle() {
             isPuzzleSolved = true;
@@ -1053,3 +1133,4 @@
     </script>
 </body>
 </html>
+
